@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String?
+  email         String? @unique
+  emailVerified DateTime?
+  image         String?
+  phone         String?
+  role          Role     @default(USER)
+  documents     Document[] @relation("UserDocuments")
+  claims        Document[] @relation("UserClaims")
+  disputes      Dispute[]
+  managedKiosks Kiosk[]  @relation("KioskManagers")
+  notifications Notification[]
+  statusChanges DocumentStatusHistory[] @relation("UserStatusChanges")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum Role {
+  VISITOR
+  USER
+  POSTER
+  KIOSK_MANAGER
+  ADMIN
+}
+
+model Document {
+  id                String   @id @default(uuid())
+  firstName         String
+  middleName        String?
+  lastName          String
+  dateOfBirth       DateTime
+  documentNumber    String
+  foundLocation     String
+  foundDistrict     String
+  foundDivision     String
+  foundSubLocation  String
+  dateFound         DateTime
+  condition         Condition
+  kioskId           String
+  kiosk             Kiosk    @relation(fields: [kioskId], references: [id])
+  posterId          String
+  poster            User     @relation("UserDocuments", fields: [posterId], references: [id])
+  claimedById       String?  // nullable until claimed
+  claimedBy         User?    @relation("UserClaims", fields: [claimedById], references: [id])
+  status            DocumentStatus @default(UPLOADED)
+  statusHistory     DocumentStatusHistory[]
+  notifications     Notification[]
+  disputes          Dispute[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  expiredAt         DateTime?
+}
+
+enum Condition {
+  GOOD
+  MEDIUM
+  BAD
+}
+
+enum DocumentStatus {
+  UPLOADED
+  AWAITING_KIOSK_ACK
+  KIOSK_CONFIRMED
+  CLAIMED
+  DISPATCHED
+  ARCHIVED
+}
+
+model Kiosk {
+  id          String     @id @default(uuid())
+  name        String    @unique
+  location    String
+  phone       String
+  hours       String?
+  isActive    Boolean   @default(true)
+  documents   Document[]
+  managers    User[]    @relation("KioskManagers")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  documentId  String?
+  document    Document? @relation(fields: [documentId], references: [id])
+  type        NotificationType
+  channel     NotificationChannel
+  message     String
+  sent        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+enum NotificationType {
+  CLAIM
+  UPLOAD
+  KIOSK_ACK
+  KIOSK_DISPATCH
+  REMINDER
+  DISPUTE
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+}
+
+model Dispute {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id])
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id])
+  category    DisputeCategory
+  explanation String?
+  status      DisputeStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum DisputeCategory {
+  WRONG_PERSON
+  INCORRECT_DETAILS
+  FRAUD
+  OTHER
+}
+
+enum DisputeStatus {
+  PENDING
+  IN_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+model DocumentStatusHistory {
+  id          String   @id @default(uuid())
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id])
+  status      DocumentStatus
+  changedById String?
+  changedBy   User?    @relation("UserStatusChanges", fields: [changedById], references: [id])
+  createdAt   DateTime @default(now())
+}
