@@ -38,6 +38,23 @@ export async function POST(req: Request) {
     docNumber: maskDocNumber(doc.documentNumber),
     type: 'ID Card', // You can expand this if you add more types
     status: doc.status,
+    // Include full document data for successful claims (will be revealed after payment)
+    fullData: {
+      id: doc.id,
+      firstName: doc.firstName,
+      middleName: doc.middleName,
+      lastName: doc.lastName,
+      documentNumber: doc.documentNumber,
+      dateOfBirth: doc.dateOfBirth,
+      foundLocation: doc.foundLocation,
+      foundDistrict: doc.foundDistrict,
+      foundDivision: doc.foundDivision,
+      foundSubLocation: doc.foundSubLocation,
+      dateFound: doc.dateFound,
+      condition: doc.condition,
+      status: doc.status,
+      createdAt: doc.createdAt
+    }
   }));
 
   return NextResponse.json({ results });
