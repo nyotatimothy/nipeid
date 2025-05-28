@@ -406,42 +406,48 @@ export default function AdminPanelPage() {
                               </TableCell>
                               <TableCell>{kiosk.documentsCount}</TableCell>
                               <TableCell align="right">
-                                {getStatusDisplay(kiosk) === 'PENDING' && (
-                                  <>
-                                    <IconButton 
-                                      color="success" 
-                                      onClick={() => handleApproveKiosk(kiosk.id)} 
-                                      aria-label={`Approve kiosk ${kiosk.name}`} 
-                                      disabled={loading}
-                                      size="small"
-                                      title="Approve"
-                                    >
-                                      <CheckCircleIcon />
-                                    </IconButton>
-                                    <IconButton 
-                                      color="error" 
-                                      onClick={() => handleRejectKiosk(kiosk.id)} 
-                                      aria-label={`Reject kiosk ${kiosk.name}`} 
-                                      disabled={loading}
-                                      size="small"
-                                      title="Reject"
-                                    >
-                                      <BlockIcon />
-                                    </IconButton>
-                                  </>
-                                )}
-                                {getStatusDisplay(kiosk) === 'ACTIVE' && (
-                                  <IconButton 
-                                    color="warning" 
-                                    onClick={() => handleKioskAction(kiosk.id, 'suspend')} 
-                                    aria-label={`Suspend kiosk ${kiosk.name}`} 
-                                    disabled={loading}
-                                    size="small"
-                                    title="Suspend"
-                                  >
-                                    <BlockIcon />
-                                  </IconButton>
-                                )}
+                                {/* Approve Button - Disabled when already ACTIVE */}
+                                <IconButton 
+                                  color="success" 
+                                  onClick={() => handleApproveKiosk(kiosk.id)} 
+                                  aria-label={`Approve kiosk ${kiosk.name}`} 
+                                  disabled={loading || getStatusDisplay(kiosk) === 'ACTIVE'}
+                                  size="small"
+                                  title={getStatusDisplay(kiosk) === 'ACTIVE' ? 'Already Active' : 'Approve'}
+                                  sx={{ 
+                                    opacity: getStatusDisplay(kiosk) === 'ACTIVE' ? 0.3 : 1,
+                                    cursor: getStatusDisplay(kiosk) === 'ACTIVE' ? 'not-allowed' : 'pointer'
+                                  }}
+                                >
+                                  <CheckCircleIcon />
+                                </IconButton>
+                                
+                                {/* Reject/Suspend Button - Disabled when PENDING */}
+                                <IconButton 
+                                  color="error" 
+                                  onClick={() => {
+                                    if (getStatusDisplay(kiosk) === 'ACTIVE') {
+                                      handleKioskAction(kiosk.id, 'suspend');
+                                    } else {
+                                      handleRejectKiosk(kiosk.id);
+                                    }
+                                  }} 
+                                  aria-label={getStatusDisplay(kiosk) === 'ACTIVE' ? `Suspend kiosk ${kiosk.name}` : `Reject kiosk ${kiosk.name}`}
+                                  disabled={loading || getStatusDisplay(kiosk) === 'PENDING'}
+                                  size="small"
+                                  title={
+                                    getStatusDisplay(kiosk) === 'PENDING' ? 'Cannot reject pending kiosk' :
+                                    getStatusDisplay(kiosk) === 'ACTIVE' ? 'Suspend' : 'Reject'
+                                  }
+                                  sx={{ 
+                                    opacity: getStatusDisplay(kiosk) === 'PENDING' ? 0.3 : 1,
+                                    cursor: getStatusDisplay(kiosk) === 'PENDING' ? 'not-allowed' : 'pointer'
+                                  }}
+                                >
+                                  <BlockIcon />
+                                </IconButton>
+                                
+                                {/* Edit Button - Always active */}
                                 <IconButton 
                                   color="primary" 
                                   onClick={() => handleEditKiosk(kiosk)}
@@ -452,6 +458,8 @@ export default function AdminPanelPage() {
                                 >
                                   <EditIcon />
                                 </IconButton>
+                                
+                                {/* View Button - Always active */}
                                 <IconButton 
                                   color="info" 
                                   onClick={() => handleViewKiosk(kiosk)}
