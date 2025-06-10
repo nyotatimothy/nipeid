@@ -5,7 +5,42 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { MagnifyingGlassIcon, UserIcon, ArrowRightOnRectangleIcon, DocumentPlusIcon, BuildingStorefrontIcon, Cog6ToothIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
-import { AppBar, Toolbar, Button, Grid, Card, CardContent, Typography, Box, Avatar, Divider, List, ListItem, ListItemIcon, ListItemText, Stack, CircularProgress, Slide, Fade, Paper, Chip } from '@mui/material';
+import { 
+  AppBar, 
+  Toolbar, 
+  Button, 
+  Card, 
+  CardContent, 
+  Typography, 
+  Box, 
+  Avatar, 
+  Divider, 
+  List, 
+  ListItem, 
+  ListItemIcon, 
+  ListItemText, 
+  Stack, 
+  CircularProgress, 
+  Slide, 
+  Fade, 
+  Paper, 
+  Chip, 
+  Accordion, 
+  AccordionSummary, 
+  AccordionDetails,
+  Container,
+  useTheme,
+  useMediaQuery,
+  IconButton,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  TextField
+} from '@mui/material';
+import { motion } from 'framer-motion';
 import InfoIcon from '@mui/icons-material/Info';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
@@ -25,6 +60,14 @@ import SecurityIcon from '@mui/icons-material/Security';
 import SpeedIcon from '@mui/icons-material/Speed';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import { People as PeopleIcon } from '@mui/icons-material';
+import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
+import PersonIcon from '@mui/icons-material/Person';
 
 const statusLabels: Record<string, string> = {
   UPLOADED: 'Uploaded',
@@ -50,6 +93,45 @@ const failureReasons = [
   { id: 'security_block', title: 'Security Block', description: 'Your bank has blocked this transaction for security reasons.' },
   { id: 'service_unavailable', title: 'Service Temporarily Unavailable', description: 'The payment service is currently down. Please try again later.' },
 ];
+
+const stats = [
+  { label: 'Documents Found', value: '10,000+', icon: DocumentScannerIcon },
+  { label: 'Documents Returned', value: '8,500+', icon: VerifiedUserIcon },
+  { label: 'Active Users', value: '15,000+', icon: PeopleIcon },
+  { label: 'Partner Kiosks', value: '100+', icon: LocationOnIcon },
+];
+
+const features = [
+  {
+    title: 'Quick Search',
+    description: 'Find your lost documents using name, document number, or type',
+    icon: SearchIcon,
+  },
+  {
+    title: 'Secure Verification',
+    description: 'Multi-step verification process to ensure legitimate claims',
+    icon: SecurityIcon,
+  },
+  {
+    title: 'Real-time Updates',
+    description: 'Get instant notifications about your document status',
+    icon: AccessTimeIcon,
+  },
+  {
+    title: 'Nationwide Network',
+    description: 'Access to kiosks and collection points across the country',
+    icon: LocationOnIcon,
+  },
+];
+
+// Add this style block near the top of the file, after the imports
+const styles = `
+  .hero-image {
+    filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.1)) !important;
+    transform: scale(1.1) !important;
+    object-fit: contain;
+  }
+`;
 
 export default function Home() {
   const [query, setQuery] = useState('');
@@ -83,21 +165,92 @@ export default function Home() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchSectionRef = useRef<HTMLDivElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [searchForm, setSearchForm] = useState({
+    name: '',
+    documentNumber: '',
+    documentType: ''
+  });
+  const [searchErrors, setSearchErrors] = useState({
+    name: '',
+    documentNumber: '',
+    documentType: ''
+  });
+  const [hasSearched, setHasSearched] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const performSearch = useCallback(async (searchQuery: string) => {
-    if (searchQuery.length < 6) {
-      setResults([]);
-      setQuery('');
+  // Auto-redirect authenticated users to their dashboards
+  useEffect(() => {
+    if (session?.user) {
+      const role = (session.user as any).role;
+      switch (role) {
+        case 'ADMIN':
+          router.push('/admin');
+          return;
+        case 'KIOSK_MANAGER':
+          router.push('/kiosk');
+          return;
+        case 'POSTER':
+          router.push('/poster');
+          return;
+        default:
+          // For regular users or unknown roles, stay on homepage
+          break;
+      }
+    }
+  }, [session, router]);
+
+  const validateSearchForm = () => {
+    const errors = {
+      name: '',
+      documentNumber: '',
+      documentType: ''
+    };
+    let isValid = true;
+
+    // Only validate length if the field is not empty
+    if (searchForm.name && searchForm.name.length < 3) {
+      errors.name = 'If provided, name must be at least 3 characters';
+      isValid = false;
+    }
+
+    if (searchForm.documentNumber && searchForm.documentNumber.length < 4) {
+      errors.documentNumber = 'If provided, document number must be at least 4 characters';
+      isValid = false;
+    }
+
+    // Allow empty fields but require at least one field to have a value
+    if (!searchForm.name && !searchForm.documentNumber && !searchForm.documentType) {
+      errors.name = 'Please fill in at least one search field';
+      errors.documentNumber = 'Please fill in at least one search field';
+      errors.documentType = 'Please fill in at least one search field';
+      isValid = false;
+    }
+
+    setSearchErrors(errors);
+    return isValid;
+  };
+
+  const handleSearchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setHasSearched(true);
+    
+    if (!validateSearchForm()) {
       return;
     }
+
     setLoading(true);
-    setQuery(searchQuery);
     try {
       const res = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: searchQuery }),
+        body: JSON.stringify({
+          name: searchForm.name,
+          documentNumber: searchForm.documentNumber,
+          documentType: searchForm.documentType
+        }),
       });
       const data = await res.json();
       setResults(data.results || []);
@@ -107,19 +260,22 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  const handleInputChange = useCallback((value: string) => {
-    setInputValue(value);
-    
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-    
-    searchTimeoutRef.current = setTimeout(() => {
-      performSearch(value);
-    }, 300);
-  }, [performSearch]);
+  const resetSearchForm = () => {
+    setSearchForm({
+      name: '',
+      documentNumber: '',
+      documentType: ''
+    });
+    setSearchErrors({
+      name: '',
+      documentNumber: '',
+      documentType: ''
+    });
+    setResults([]);
+    setHasSearched(false);
+  };
 
   function handleClaim(doc: any) {
     if (!session) {
@@ -247,324 +403,527 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    // Add styles to head
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = styles;
+    document.head.appendChild(styleElement);
+
+    // Cleanup
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="static" color="transparent" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar src="/myID.png" alt="MyID Logo" sx={{ width: 72, height: 72, bgcolor: 'white', boxShadow: 3 }} />
-          </Box>
-          {!session && (
-            <Button variant="contained" color="primary" onClick={handleLoginRedirect}>
-              Login / Sign Up
-            </Button>
-          )}
-        </Toolbar>
-      </AppBar>
-      <Box sx={{ textAlign: 'center', mt: 6, mb: 4 }}>
-        <Typography variant="h4" fontWeight={800} color="primary.main" gutterBottom>
-          Welcome to MyID: Lost & Found Identity Documents
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Find and claim your lost Documents (e.g. ID, Passport, Birth certificate) easily.
-        </Typography>
-      </Box>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={4}
-        justifyContent="center"
-        alignItems="flex-start"
-        sx={{ width: '100%', maxWidth: 1200, mx: 'auto', px: 2 }}
+    <Box sx={{ minHeight: '100vh' }}>
+      {/* Hero Section */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+          color: 'white',
+          pt: { xs: 8, md: 12 },
+          pb: { xs: 10, md: 14 },
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <Card elevation={3} sx={{ mb: { xs: 4, md: 0 }, width: '100%', maxWidth: 600, flex: 1 }}>
-          <CardContent>
-            <Typography variant="h6" fontWeight={700} gutterBottom>Search for your Lost Document</Typography>
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-              <input
-                type="text"
-                placeholder="Search your name or document number..."
-                aria-label="Search your name or document number"
-                style={{ flex: 1, padding: 12, borderRadius: 8, border: '1px solid #ccc', fontSize: 18 }}
-                value={inputValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                disabled={loading}
-                onKeyDown={handleSearchInput}
-                ref={searchInputRef}
-              />
+        <Container maxWidth="lg">
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="stretch">
+            <Box flex={1}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <Typography variant="h2" fontWeight="bold" gutterBottom>
+                  Lost Your ID?
+                  <br />
+                  We've Got You Covered
+                </Typography>
+                <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+                  MyID helps you find and reclaim your lost identification documents - from National IDs and Passports to Birth Certificates and Driver's Licenses, all safely and securely.
+                </Typography>
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => {
+                      searchSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                      setTimeout(() => {
+                        searchInputRef.current?.focus();
+                      }, 1000);
+                    }}
+                    sx={{ 
+                      bgcolor: 'white', 
+                      color: 'primary.main',
+                      '&:hover': { bgcolor: 'grey.100' }
+                    }}
+                  >
+                    Start Search
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    component={Link}
+                    href="/about"
+                    sx={{ 
+                      borderColor: 'white', 
+                      color: 'white',
+                      '&:hover': { borderColor: 'grey.100', bgcolor: 'rgba(255,255,255,0.1)' }
+                    }}
+                  >
+                    Learn More
+                  </Button>
+                  {!session && (
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      onClick={() => router.push('/login')}
+                      sx={{ 
+                        borderColor: 'white', 
+                        color: 'white',
+                        '&:hover': { borderColor: 'grey.100', bgcolor: 'rgba(255,255,255,0.1)' }
+                      }}
+                    >
+                      Login
+                    </Button>
+                  )}
+                </Stack>
+              </motion.div>
             </Box>
-            <Divider sx={{ my: 2 }} />
-            <Box sx={{ minHeight: 180 }}>
-              {loading ? (
-                <Box display="flex" alignItems="center" justifyContent="center" py={2}>
-                  <CircularProgress color="primary" aria-label="Loading search results" />
+            <Box flex={1}>
+              <Box sx={{ position: 'relative', height: { xs: 300, md: 400 } }}>
+                <Image
+                  src="/hero-image.svg"
+                  alt="Lost ID Documents Illustration"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                  className="hero-image"
+                />
+              </Box>
+            </Box>
+          </Stack>
+        </Container>
+
+        {/* Curved bottom edge */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: -1,
+            left: 0,
+            width: '100%',
+            overflow: 'hidden',
+            lineHeight: 0,
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 120"
+            preserveAspectRatio="none"
+            style={{
+              position: 'relative',
+              display: 'block',
+              width: 'calc(100% + 1.3px)',
+              height: '50px',
+            }}
+          >
+            <path
+              d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+              fill="#ffffff"
+            />
+          </svg>
+        </Box>
+      </Box>
+
+      {/* Stats Section */}
+      <Container maxWidth="lg" sx={{ mt: -5, position: 'relative', zIndex: 1 }}>
+        <Paper elevation={3} sx={{ borderRadius: 4, py: 4 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 3 }}>
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <Box key={index} sx={{ textAlign: 'center' }}>
+                  <Icon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
+                  <Typography variant="h4" fontWeight="bold" color="primary">
+                    {stat.value}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {stat.label}
+                  </Typography>
                 </Box>
-              ) : results.length === 0 && inputValue.length >= 6 ? (
-                <>
-                  <Typography color="text.secondary">No results found.</Typography>
-                  <Box mt={4} p={3} bgcolor="#f8fafc" borderRadius={3} boxShadow={1} maxWidth={420} mx="auto">
-                    <Typography variant="h6" fontWeight={700} gutterBottom>Didn't find your document?</Typography>
-                    <Typography variant="body2" color="text.secondary" mb={2}>
-                      Provide your contact details and document information. We'll notify you as soon as your lost document is found.
-                    </Typography>
-                    {contactRequestSuccess ? (
-                      <Typography color="success.main" fontWeight={600} mb={2}>Thank you! We'll notify you as soon as your lost document is found.</Typography>
-                    ) : (
-                      <form
-                        onSubmit={async e => {
-                          e.preventDefault();
-                          setContactRequestLoading(true);
-                          setContactRequestError('');
-                          
-                          try {
-                            const response = await fetch('/api/contact-request', {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                              body: JSON.stringify({
-                                name: contactRequest.name,
-                                email: contactRequest.email,
-                                phone: contactRequest.phone || null,
-                                documentType: contactRequest.documentType || null,
-                                documentNumber: contactRequest.documentNumber || null,
-                                firstName: contactRequest.firstName || null,
-                                lastName: contactRequest.lastName || null,
-                                searchQuery: inputValue || null, // Include their search query
-                              }),
-                            });
-                            
-                            const data = await response.json();
-                            
-                            if (data.success) {
-                              setContactRequestSuccess(true);
-                              setContactRequest({ 
-                                name: '', 
-                                email: '', 
-                                phone: '',
-                                documentType: '',
-                                documentNumber: '',
-                                firstName: '',
-                                lastName: ''
-                              });
-                            } else {
-                              setContactRequestError(data.message || 'Failed to save your request. Please try again.');
-                            }
-                          } catch (error) {
-                            console.error('Error submitting contact request:', error);
-                            setContactRequestError('Network error. Please check your connection and try again.');
-                          } finally {
-                            setContactRequestLoading(false);
-                          }
-                        }}
-                        style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
-                        aria-label="Contact request form"
-                      >
-                        <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1, mt: 1 }}>
-                          Personal Information
-                        </Typography>
-                        <input
-                          type="text"
-                          required
-                          placeholder="Your Full Name"
-                          aria-label="Your Full Name"
-                          value={contactRequest.name}
-                          onChange={e => setContactRequest({ ...contactRequest, name: e.target.value })}
-                          style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc', fontSize: 16, marginBottom: 8 }}
-                          disabled={contactRequestLoading}
-                        />
-                        <input
-                          type="email"
-                          required
-                          placeholder="Your Email"
-                          aria-label="Your Email"
-                          value={contactRequest.email}
-                          onChange={e => setContactRequest({ ...contactRequest, email: e.target.value })}
-                          style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc', fontSize: 16, marginBottom: 8 }}
-                          disabled={contactRequestLoading}
-                        />
-                        <input
-                          type="tel"
-                          placeholder="Your Phone (optional)"
-                          aria-label="Your Phone"
-                          value={contactRequest.phone}
-                          onChange={e => setContactRequest({ ...contactRequest, phone: e.target.value })}
-                          style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc', fontSize: 16, marginBottom: 8 }}
-                          disabled={contactRequestLoading}
-                        />
-                        
-                        <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1, mt: 2 }}>
-                          Lost Document Information
-                        </Typography>
-                        <select
-                          value={contactRequest.documentType}
-                          onChange={e => setContactRequest({ ...contactRequest, documentType: e.target.value })}
-                          style={{ 
-                            padding: 10, 
-                            borderRadius: 6, 
-                            border: '1px solid #ccc', 
-                            fontSize: 16, 
-                            marginBottom: 8,
-                            backgroundColor: 'white'
-                          }}
-                          disabled={contactRequestLoading}
-                        >
-                          <option value="">Select Document Type (optional)</option>
-                          <option value="NATIONAL_ID">National ID</option>
-                          <option value="PASSPORT">Passport</option>
-                          <option value="BIRTH_CERTIFICATE">Birth Certificate</option>
-                          <option value="DRIVING_LICENSE">Driving License</option>
-                          <option value="OTHER">Other</option>
-                        </select>
-                        <input
-                          type="text"
-                          placeholder="Document Number (if known)"
-                          aria-label="Document Number"
-                          value={contactRequest.documentNumber}
-                          onChange={e => setContactRequest({ ...contactRequest, documentNumber: e.target.value })}
-                          style={{ padding: 10, borderRadius: 6, border: '1px solid #ccc', fontSize: 16, marginBottom: 8 }}
-                          disabled={contactRequestLoading}
-                        />
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          <input
-                            type="text"
-                            placeholder="First Name (on document)"
-                            aria-label="First Name"
-                            value={contactRequest.firstName}
-                            onChange={e => setContactRequest({ ...contactRequest, firstName: e.target.value })}
-                            style={{ 
-                              padding: 10, 
-                              borderRadius: 6, 
-                              border: '1px solid #ccc', 
-                              fontSize: 16, 
-                              marginBottom: 8,
-                              flex: 1
-                            }}
-                            disabled={contactRequestLoading}
-                          />
-                          <input
-                            type="text"
-                            placeholder="Last Name (on document)"
-                            aria-label="Last Name"
-                            value={contactRequest.lastName}
-                            onChange={e => setContactRequest({ ...contactRequest, lastName: e.target.value })}
-                            style={{ 
-                              padding: 10, 
-                              borderRadius: 6, 
-                              border: '1px solid #ccc', 
-                              fontSize: 16, 
-                              marginBottom: 8,
-                              flex: 1
-                            }}
-                            disabled={contactRequestLoading}
+              );
+            })}
+          </Box>
+        </Paper>
+      </Container>
+
+      {/* Search Section */}
+      <Container maxWidth="lg" sx={{ mt: 8, mb: 8 }} ref={searchSectionRef}>
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            borderRadius: 4,
+            p: 4,
+            background: 'linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%)'
+          }}
+        >
+          <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
+            Search for Your Document
+          </Typography>
+          <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 4 }}>
+            Enter your details below to search for your lost document
+          </Typography>
+
+          <form onSubmit={handleSearchSubmit}>
+            <Stack spacing={3}>
+              <Box>
+                <TextField
+                  fullWidth
+                  label="Full Name"
+                  value={searchForm.name}
+                  onChange={(e) => setSearchForm({ ...searchForm, name: e.target.value })}
+                  error={!!searchErrors.name}
+                  helperText={searchErrors.name}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PersonIcon color="action" />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
+              <Box>
+                <TextField
+                  fullWidth
+                  label="Document Number"
+                  value={searchForm.documentNumber}
+                  onChange={(e) => setSearchForm({ ...searchForm, documentNumber: e.target.value })}
+                  error={!!searchErrors.documentNumber}
+                  helperText={searchErrors.documentNumber}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <CreditCardIcon color="action" />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
+              <Box>
+                <FormControl fullWidth error={!!searchErrors.documentType}>
+                  <InputLabel>Document Type</InputLabel>
+                  <Select
+                    value={searchForm.documentType}
+                    onChange={(e) => setSearchForm({ ...searchForm, documentType: e.target.value })}
+                    label="Document Type"
+                    startAdornment={
+                      <InputAdornment position="start">
+                        <DocumentScannerIcon color="action" />
+                      </InputAdornment>
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>Select type</em>
+                    </MenuItem>
+                    <MenuItem value="NATIONAL_ID">National ID</MenuItem>
+                    <MenuItem value="PASSPORT">Passport</MenuItem>
+                    <MenuItem value="DRIVING_LICENSE">Driving License</MenuItem>
+                    <MenuItem value="BIRTH_CERTIFICATE">Birth Certificate</MenuItem>
+                  </Select>
+                  {searchErrors.documentType && (
+                    <FormHelperText>{searchErrors.documentType}</FormHelperText>
+                  )}
+                </FormControl>
+              </Box>
+            </Stack>
+
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', gap: 2 }}>
+              <Button
+                variant="contained"
+                size="large"
+                type="submit"
+                disabled={loading}
+                startIcon={loading ? <CircularProgress size={20} /> : <SearchIcon />}
+              >
+                {loading ? 'Searching...' : 'Search Now'}
+              </Button>
+              {hasSearched && (
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={resetSearchForm}
+                  startIcon={<RefreshIcon />}
+                >
+                  Reset
+                </Button>
+              )}
+            </Box>
+          </form>
+
+          {/* Search Results */}
+          {hasSearched && (
+            <Box sx={{ mt: 4 }}>
+              {results.length > 0 ? (
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3 }}>
+                  {results.map((doc, index) => (
+                    <Card 
+                      key={index}
+                      elevation={2}
+                      sx={{ 
+                        height: '100%',
+                        transition: 'transform 0.2s',
+                        '&:hover': { transform: 'translateY(-4px)' }
+                      }}
+                    >
+                      <CardContent>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                          <Typography variant="h6" component="div">
+                            {doc.firstName} {doc.lastName}
+                          </Typography>
+                          <Chip
+                            label={statusLabels[doc.status]}
+                            color={doc.status === 'CLAIMED' ? 'success' : 'primary'}
+                            size="small"
                           />
                         </Box>
                         
-                        <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
-                          💡 The more information you provide, the better we can match your document when it's found!
+                        <Typography color="text.secondary" gutterBottom>
+                          Document Type: {doc.documentType.replace('_', ' ')}
                         </Typography>
                         
-                        {contactRequestError && <Typography color="error" fontSize={14}>{contactRequestError}</Typography>}
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          color="primary"
-                          disabled={contactRequestLoading}
-                          aria-label="Submit contact request"
-                          sx={{ fontWeight: 700, borderRadius: 2 }}
-                        >
-                          {contactRequestLoading ? <CircularProgress size={22} color="inherit" aria-label="Submitting..." /> : 'Notify Me When Found'}
-                        </Button>
-                      </form>
-                    )}
-                  </Box>
-                </>
-              ) : results.length === 0 && inputValue.length < 6 ? (
-                <Box sx={{ textAlign: 'center', color: 'text.disabled', py: 4 }}>
-                  <Typography fontWeight={500}>Start your search above</Typography>
-                  <Typography variant="body2">Enter at least 6 characters of a name or document number to search.</Typography>
-                  {inputValue.length > 0 && inputValue.length < 6 && (
-                    <Typography variant="caption" color="primary" sx={{ mt: 1, display: 'block' }}>
-                      Type {6 - inputValue.length} more character{6 - inputValue.length === 1 ? '' : 's'} to search...
-                    </Typography>
-                  )}
+                        <Typography variant="body2" sx={{ mb: 2 }}>
+                          Found at: {doc.foundLocation}
+                        </Typography>
+
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Found on: {new Date(doc.dateFound).toLocaleDateString()}
+                          </Typography>
+                          
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={() => handleClaim(doc)}
+                            disabled={claiming === doc.id || doc.status === 'CLAIMED'}
+                            startIcon={claiming === doc.id ? <CircularProgress size={20} /> : null}
+                          >
+                            {doc.status === 'CLAIMED' ? 'Already Claimed' : 'Claim Document'}
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </Box>
               ) : (
-                <List>
-                  {results.map((doc, i) => (
-                    <ListItem key={i} alignItems="flex-start" sx={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <Typography fontWeight={600}>{doc.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">Doc #: {doc.docNumber}</Typography>
-                      <Typography variant="body2" color="text.secondary">Status: {statusLabels[doc.status] || doc.status}</Typography>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        sx={{ mt: 1 }}
-                        onClick={() => handleClaim(doc)}
-                        disabled={doc.status !== 'UPLOADED' && doc.status !== 'KIOSK_CONFIRMED' || loading}
-                        aria-label={`Claim document ${doc.docNumber}`}
-                      >
-                        Claim
-                      </Button>
-                    </ListItem>
-                  ))}
-                </List>
+                <Paper 
+                  sx={{ 
+                    p: 3, 
+                    textAlign: 'center',
+                    bgcolor: 'grey.50',
+                    borderRadius: 2
+                  }}
+                >
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No Documents Found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" mb={3}>
+                    We couldn't find any documents matching your search criteria.
+                  </Typography>
+                  
+                  <Box sx={{ maxWidth: 500, mx: 'auto', p: 3, bgcolor: 'primary.50', borderRadius: 2 }}>
+                    <Typography variant="h6" color="primary" gutterBottom>
+                      Report Your Lost Document
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" mb={2}>
+                      Don't worry! Fill out our lost document report form and we'll notify you as soon as your document is found.
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      onClick={() => router.push('/report')}
+                      startIcon={<DocumentScannerIcon />}
+                    >
+                      Report Lost Document
+                    </Button>
+                  </Box>
+                </Paper>
               )}
             </Box>
-          </CardContent>
-        </Card>
-        <Card elevation={2} sx={{ width: '100%', maxWidth: 400, flexShrink: 0 }}>
-          <CardContent>
-            <Typography variant="h6" fontWeight={700} gutterBottom>How it works</Typography>
-            <Stack spacing={3} sx={{ mt: 2, mb: 2, position: 'relative' }}>
-              {[
-                {
-                  label: 'Search for your Lost Document',
-                  desc: 'Enter your name or document number.'
-                },
-                {
-                  label: 'Claim & verify ownership',
-                  desc: 'Follow the claim steps and verify your identity.'
-                },
-                {
-                  label: 'Collect at the nearest kiosk',
-                  desc: 'Pick up your document at a convenient location.'
-                }
-              ].map((step, idx, arr) => (
-                <Box key={idx} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, position: 'relative' }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mr: 1 }}>
-                    <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32, fontWeight: 700, fontSize: 18 }}>{idx + 1}</Avatar>
-                    {idx < arr.length - 1 && (
-                      <Box sx={{ width: 2, height: 32, bgcolor: 'primary.main', mt: 0.5 }} />
-                    )}
-                  </Box>
-                  <Box>
-                    <Typography fontWeight={600}>{step.label}</Typography>
-                    <Typography variant="body2" color="text.secondary">{step.desc}</Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Stack>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="h6" fontWeight={700} gutterBottom>FAQ</Typography>
-            <List>
-              <ListItem>
-                <ListItemIcon><HelpOutlineIcon color="secondary" /></ListItemIcon>
-                <ListItemText primary="How do I claim my document?" secondary="Search for your document, click 'Claim', and follow the steps." />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon><HelpOutlineIcon color="secondary" /></ListItemIcon>
-                <ListItemText primary="What documents are supported?" secondary="We support national IDs, passports, and birth certificates." />
-              </ListItem>
-            </List>
-            <Divider sx={{ my: 2 }} />
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <SupportAgentIcon color="action" />
-              <Typography variant="body2">Need help? <Link href="/contact">Contact support</Link></Typography>
+          )}
+        </Paper>
+      </Container>
+
+      {/* Features Section */}
+      <Box sx={{ bgcolor: 'grey.50', py: 8 }}>
+        <Container maxWidth="lg">
+          <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
+            Why Choose MyID?
+          </Typography>
+          <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 6 }}>
+            We make the process of finding and claiming lost documents simple and secure
+          </Typography>
+
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 4 }}>
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <Paper
+                  key={index}
+                  elevation={2}
+                  sx={{
+                    p: 3,
+                    height: '100%',
+                    textAlign: 'center',
+                    transition: 'transform 0.2s',
+                    '&:hover': { transform: 'translateY(-4px)' }
+                  }}
+                >
+                  <Icon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+                  <Typography variant="h6" gutterBottom>
+                    {feature.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {feature.description}
+                  </Typography>
+                </Paper>
+              );
+            })}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* How It Works Section */}
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
+          How It Works
+        </Typography>
+        <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 6 }}>
+          Follow these simple steps to reclaim your lost document
+        </Typography>
+
+        <Timeline position={isMobile ? "right" : "alternate"}>
+          <TimelineItem>
+            <TimelineSeparator>
+              <TimelineDot color="primary">
+                <SearchIcon />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent>
+              <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+                <Typography variant="h6" component="span">
+                  Search
+                </Typography>
+                <Typography>Enter your details to search for your lost document</Typography>
+              </Paper>
+            </TimelineContent>
+          </TimelineItem>
+
+          <TimelineItem>
+            <TimelineSeparator>
+              <TimelineDot color="primary">
+                <VerifiedUserIcon />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent>
+              <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+                <Typography variant="h6" component="span">
+                  Verify
+                </Typography>
+                <Typography>Provide necessary information to verify your identity</Typography>
+              </Paper>
+            </TimelineContent>
+          </TimelineItem>
+
+          <TimelineItem>
+            <TimelineSeparator>
+              <TimelineDot color="primary">
+                <LocalPoliceIcon />
+              </TimelineDot>
+              <TimelineConnector />
+            </TimelineSeparator>
+            <TimelineContent>
+              <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+                <Typography variant="h6" component="span">
+                  Claim
+                </Typography>
+                <Typography>Complete the claiming process and pay any applicable fees</Typography>
+              </Paper>
+            </TimelineContent>
+          </TimelineItem>
+
+          <TimelineItem>
+            <TimelineSeparator>
+              <TimelineDot color="primary">
+                <CheckCircleIcon />
+              </TimelineDot>
+            </TimelineSeparator>
+            <TimelineContent>
+              <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+                <Typography variant="h6" component="span">
+                  Collect
+                </Typography>
+                <Typography>Pick up your document from the designated kiosk</Typography>
+              </Paper>
+            </TimelineContent>
+          </TimelineItem>
+        </Timeline>
+      </Container>
+
+      {/* CTA Section */}
+      <Box sx={{ bgcolor: 'primary.main', color: 'white', py: 8 }}>
+        <Container maxWidth="lg">
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="center" justifyContent="space-between">
+            <Box flex={1}>
+              <Typography variant="h4" gutterBottom fontWeight="bold">
+                Ready to Find Your Lost Document?
+              </Typography>
+              <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                Start your search now or register as a kiosk partner
+              </Typography>
             </Box>
-          </CardContent>
-        </Card>
-      </Stack>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => {
+                  searchSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                  setTimeout(() => {
+                    searchInputRef.current?.focus();
+                  }, 1000);
+                }}
+                sx={{ 
+                  bgcolor: 'white', 
+                  color: 'primary.main',
+                  '&:hover': { bgcolor: 'grey.100' }
+                }}
+              >
+                Start Search
+              </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                component={Link}
+                href="/kiosk/register"
+                sx={{ 
+                  borderColor: 'white', 
+                  color: 'white',
+                  '&:hover': { borderColor: 'grey.100', bgcolor: 'rgba(255,255,255,0.1)' }
+                }}
+              >
+                Register Kiosk
+              </Button>
+            </Stack>
+          </Stack>
+        </Container>
+      </Box>
+
+      {/* Contact and Payment Dialogs */}
       {claiming && claimedDoc && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
@@ -577,6 +936,59 @@ export default function Home() {
                     Document #: {claimedDoc.docNumber}
                   </Typography>
                 </div>
+
+                {/* Fee Explanation Section */}
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+                  <div className="text-center mb-4">
+                    <MonetizationOnIcon style={{ fontSize: 40, color: '#1976d2', marginBottom: 8 }} />
+                    <h4 className="text-lg font-bold text-blue-700 mb-2">Collection Fee: KSh 500</h4>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <InfoIcon style={{ color: '#1976d2', fontSize: 20 }} />
+                      <span className="font-semibold text-gray-800">Why do we charge this fee?</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      This small convenience fee helps us maintain a secure, reliable service and covers essential costs:
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <SecurityIcon style={{ color: '#4caf50', fontSize: 20, marginTop: 2 }} />
+                        <div>
+                          <div className="font-medium text-sm text-gray-800">Secure Identity Verification</div>
+                          <div className="text-xs text-gray-600">Advanced verification to ensure only you can claim your documents</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-3">
+                        <LocationOnIcon style={{ color: '#ff9800', fontSize: 20, marginTop: 2 }} />
+                        <div>
+                          <div className="font-medium text-sm text-gray-800">Kiosk Network Maintenance</div>
+                          <div className="text-xs text-gray-600">Supporting 500+ collection points nationwide with real-time updates</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-3">
+                        <SpeedIcon style={{ color: '#2196f3', fontSize: 20, marginTop: 2 }} />
+                        <div>
+                          <div className="font-medium text-sm text-gray-800">24/7 Digital Platform</div>
+                          <div className="text-xs text-gray-600">Instant notifications, tracking, and customer support services</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 p-3 bg-green-50 rounded border border-green-200">
+                      <div className="flex items-center gap-2 text-green-800 text-sm">
+                        <CheckCircleIcon style={{ fontSize: 16 }} />
+                        <span className="font-semibold">Value Guarantee:</span>
+                        <span>More convenient and cheaper than replacing your ID through government offices</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <form onSubmit={handleContactSubmit} className="flex flex-col gap-3 mb-4">
                   <input
                     type="email"
@@ -606,7 +1018,7 @@ export default function Home() {
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                   <InfoIcon className="w-8 h-8 text-blue-600" />
-        </div>
+                </div>
                 <h3 className="text-xl font-bold mb-2 text-blue-700">Document Found!</h3>
                 <p className="text-gray-700 mb-6">This document is in our system. Please log in or sign up to see the kiosk location and complete your claim.</p>
                 <div className="flex flex-col gap-3 w-full">
@@ -645,16 +1057,16 @@ export default function Home() {
                       Why do we charge this fee?
                     </Typography>
                     <Typography variant="body2" color="text.secondary" paragraph>
-                      This small convenience fee helps us provide you with the best service possible:
+                      This small convenience fee helps us maintain a secure, reliable service and covers essential costs:
                     </Typography>
                     
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <SecurityIcon color="success" />
                         <Box>
-                          <Typography variant="body2" fontWeight={600}>Secure Processing</Typography>
+                          <Typography variant="body2" fontWeight={600}>Secure Identity Verification</Typography>
                           <Typography variant="caption" color="text.secondary">
-                            Verification of your identity and document authenticity
+                            Advanced verification to ensure only you can claim your documents
                           </Typography>
                         </Box>
                       </Box>
@@ -662,9 +1074,9 @@ export default function Home() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <LocationOnIcon color="warning" />
                         <Box>
-                          <Typography variant="body2" fontWeight={600}>Kiosk Location Services</Typography>
+                          <Typography variant="body2" fontWeight={600}>Kiosk Network Maintenance</Typography>
                           <Typography variant="caption" color="text.secondary">
-                            Revealing the exact collection location and operating hours
+                            Supporting 500+ collection points nationwide with real-time updates
                           </Typography>
                         </Box>
                       </Box>
@@ -672,12 +1084,29 @@ export default function Home() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <SpeedIcon color="info" />
                         <Box>
-                          <Typography variant="body2" fontWeight={600}>Fast & Convenient</Typography>
+                          <Typography variant="body2" fontWeight={600}>24/7 Digital Platform</Typography>
                           <Typography variant="caption" color="text.secondary">
-                            Priority processing and digital confirmation system
+                            Instant notifications, tracking, and customer support services
                           </Typography>
                         </Box>
                       </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <ContactSupportIcon color="primary" />
+                        <Box>
+                          <Typography variant="body2" fontWeight={600}>Professional Support</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Dedicated customer service and document recovery assistance
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ p: 2, bgcolor: 'success.50', borderRadius: 1, border: '1px solid', borderColor: 'success.200' }}>
+                      <Typography variant="body2" color="success.dark" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CheckCircleIcon fontSize="small" />
+                        <strong>Value Guarantee:</strong> Much cheaper than traveling to government offices or hiring agents
+                      </Typography>
                     </Box>
                   </Paper>
 
@@ -685,7 +1114,7 @@ export default function Home() {
                     <Typography variant="body2" color="primary.dark">
                       <strong>Document:</strong> {claimedDoc?.name}<br />
                       <strong>Document #:</strong> {claimedDoc?.docNumber}<br />
-                      <strong>Collection Fee:</strong> KSh 50 (one-time payment)
+                      <strong>Collection Fee:</strong> KSh 500 (one-time payment)
                     </Typography>
                   </Paper>
 
@@ -1041,7 +1470,7 @@ export default function Home() {
                       <p>• Proof of identity (Birth Certificate or Passport)</p>
                       <p>• This payment confirmation (screenshot or print)</p>
                     </div>
-                    <p className="text-yellow-700 mt-2"><strong>Collection Fee:</strong> KSh 50 (Already Paid ✓)</p>
+                    <p className="text-yellow-700 mt-2"><strong>Collection Fee:</strong> KSh 500 (Already Paid ✓)</p>
                   </div>
                 </div>
 
@@ -1247,10 +1676,383 @@ What to Bring:
               </div>
             )}
           </div>
-    </div>
+        </div>
       )}
-      <Box sx={{ textAlign: 'center', py: 3, color: 'text.secondary' }}>
-        <Link href="/about">About</Link> | <Link href="/privacy">Privacy</Link> | <Link href="/terms">Terms</Link>
+      
+      {/* FAQ Section */}
+      <Box sx={{ maxWidth: 1200, mx: 'auto', px: 2, py: 8 }}>
+        <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold', mb: 6, color: '#374151' }}>
+          Frequently Asked Questions
+        </Typography>
+        
+        <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+          <Accordion sx={{ mb: 2, boxShadow: 1 }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="faq1-content"
+              id="faq1-header"
+              sx={{ py: 2 }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                How do I claim my document?
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography color="text.secondary">
+                Search for your document, click 'Claim', and follow the verification steps. You'll need to provide proof of identity to complete the process.
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion sx={{ mb: 2, boxShadow: 1 }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="faq2-content"
+              id="faq2-header"
+              sx={{ py: 2 }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                What documents are supported?
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography color="text.secondary">
+                We support national ID cards, passports, driving licenses, birth certificates, and other official government-issued documents found across Kenya.
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion sx={{ mb: 2, boxShadow: 1 }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="faq3-content"
+              id="faq3-header"
+              sx={{ py: 2 }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                How long does the verification process take?
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography color="text.secondary">
+                Verification typically takes 1-3 business days. You'll receive email and SMS notifications once your document is ready for collection at your nearest kiosk.
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion sx={{ mb: 2, boxShadow: 1 }}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="faq4-content"
+              id="faq4-header"
+              sx={{ py: 2 }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Is my personal information secure?
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography color="text.secondary">
+                Yes, your data is protected with enterprise-grade security and encryption. We follow strict privacy protocols and only use your information for document verification and collection purposes.
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        </Box>
+      </Box>
+
+      {/* Why Choose MyID Section */}
+      <Box sx={{ bgcolor: '#f9fafb', py: 8 }}>
+        <Box sx={{ maxWidth: 1200, mx: 'auto', px: 2 }}>
+          <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 'bold', mb: 6, color: '#374151' }}>
+            Why Choose MyID
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 4,
+            mt: 2
+          }}>
+            <Card sx={{ 
+              flex: 1,
+              textAlign: 'center', 
+              p: 4, 
+              boxShadow: 3,
+              border: '2px solid',
+              borderColor: '#3b82f6',
+              borderRadius: 3
+            }}>
+              <Box sx={{ 
+                width: 64, 
+                height: 64, 
+                bgcolor: '#eff6ff', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                mx: 'auto', 
+                mb: 3 
+              }}>
+                <SecurityIcon sx={{ fontSize: 32, color: '#3b82f6' }} />
+              </Box>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: '#1f2937' }}>
+                Secure & Private
+              </Typography>
+              <Typography color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                Your personal information is protected with enterprise-grade security and encryption.
+              </Typography>
+            </Card>
+
+            <Card sx={{ 
+              flex: 1,
+              textAlign: 'center', 
+              p: 4, 
+              boxShadow: 3,
+              border: '2px solid',
+              borderColor: '#3b82f6',
+              borderRadius: 3
+            }}>
+              <Box sx={{ 
+                width: 64, 
+                height: 64, 
+                bgcolor: '#eff6ff', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                mx: 'auto', 
+                mb: 3 
+              }}>
+                <LocationOnIcon sx={{ fontSize: 32, color: '#3b82f6' }} />
+              </Box>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: '#1f2937' }}>
+                Nationwide Coverage
+              </Typography>
+              <Typography color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                With over 500 collection points across the country, your document is never far away.
+              </Typography>
+            </Card>
+
+            <Card sx={{ 
+              flex: 1,
+              textAlign: 'center', 
+              p: 4, 
+              boxShadow: 3,
+              border: '2px solid',
+              borderColor: '#3b82f6',
+              borderRadius: 3
+            }}>
+              <Box sx={{ 
+                width: 64, 
+                height: 64, 
+                bgcolor: '#eff6ff', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                mx: 'auto', 
+                mb: 3 
+              }}>
+                <ContactSupportIcon sx={{ fontSize: 32, color: '#3b82f6' }} />
+              </Box>
+              <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, color: '#1f2937' }}>
+                24/7 Support
+              </Typography>
+              <Typography color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                Our customer service team is available around the clock to assist with any questions.
+              </Typography>
+            </Card>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Statistics Bar */}
+      <Box sx={{ 
+        bgcolor: '#3b82f6', 
+        color: 'white', 
+        py: 6,
+        borderRadius: '12px',
+        mx: 2,
+        mb: 0
+      }}>
+        <Box sx={{ 
+          maxWidth: 1200, 
+          mx: 'auto', 
+          px: 2,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          gap: 4
+        }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              250,000+
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Documents Returned
+            </Typography>
+          </Box>
+          
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              98%
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Success Rate
+            </Typography>
+          </Box>
+          
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              500+
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Collection Points
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Main Footer */}
+      <Box sx={{ 
+        bgcolor: '#ffffff', 
+        py: 8,
+        borderTop: '1px solid #e5e7eb'
+      }}>
+        <Box sx={{ 
+          maxWidth: 1200, 
+          mx: 'auto', 
+          px: 2,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 6
+        }}>
+          {/* MyID Column */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
+              MyID
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#6b7280', lineHeight: 1.6, mb: 3 }}>
+              The most trusted lost and found service for identity documents.
+            </Typography>
+          </Box>
+
+          {/* Services Column */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
+              Services
+            </Typography>
+            <Stack spacing={2}>
+              <Link href="/search" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Document Search
+              </Link>
+              <Link href="/report" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Lost Document Reporting
+              </Link>
+              <Link href="/verify" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Identity Verification
+              </Link>
+              <Link href="/collect" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Secure Collection
+              </Link>
+            </Stack>
+          </Box>
+
+          {/* Company Column */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
+              Company
+            </Typography>
+            <Stack spacing={2}>
+              <Link href="/about" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                About Us
+              </Link>
+              <Link href="/privacy" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Privacy Policy
+              </Link>
+              <Link href="/terms" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Terms of Service
+              </Link>
+              <Link href="/contact" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Contact Us
+              </Link>
+            </Stack>
+          </Box>
+
+          {/* Connect Column */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
+              Connect
+            </Typography>
+            
+            {/* Trust Badges */}
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 2, 
+              mb: 4,
+              alignItems: 'center'
+            }}>
+              <Box sx={{ 
+                width: 48, 
+                height: 48, 
+                bgcolor: '#3b82f6', 
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <CheckCircleIcon sx={{ color: 'white', fontSize: 24 }} />
+              </Box>
+              <Box sx={{ 
+                width: 48, 
+                height: 48, 
+                bgcolor: '#3b82f6', 
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <SecurityIcon sx={{ color: 'white', fontSize: 24 }} />
+              </Box>
+              <Box sx={{ 
+                width: 48, 
+                height: 48, 
+                bgcolor: '#3b82f6', 
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <ContactSupportIcon sx={{ color: 'white', fontSize: 24 }} />
+              </Box>
+            </Box>
+            
+            <Stack spacing={1}>
+              <Typography variant="caption" sx={{ color: '#374151', fontWeight: 600 }}>
+                Certified
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#374151', fontWeight: 600 }}>
+                Secure
+              </Typography>
+              <Typography variant="caption" sx={{ color: '#374151', fontWeight: 600 }}>
+                Trusted
+              </Typography>
+            </Stack>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Copyright */}
+      <Box sx={{ 
+        bgcolor: '#f9fafb', 
+        py: 3, 
+        borderTop: '1px solid #e5e7eb',
+        textAlign: 'center'
+      }}>
+        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+          © 2025 MyID. All rights reserved.
+        </Typography>
       </Box>
     </Box>
   );

@@ -33,7 +33,11 @@ import {
   MenuItem,
   Grid,
   Snackbar,
-  Alert
+  Alert,
+  Container,
+  Stack,
+  Paper,
+  InputAdornment
 } from '@mui/material';
 import Link from '@mui/material/Link';
 import {
@@ -46,8 +50,36 @@ import {
   Close as CloseIcon,
   AssignmentInd as AssignmentIndIcon,
   Gavel as GavelIcon,
-  Archive as ArchiveIcon
+  Archive as ArchiveIcon,
+  Dashboard as DashboardIcon,
+  Assessment as AssessmentIcon,
+  Description as DescriptionIcon,
+  AttachMoney as AttachMoneyIcon,
+  TrendingUp as TrendingUpIcon,
+  People as PeopleIcon,
+  Store as StoreIcon,
+  NotificationsNone as NotificationsIcon,
+  Settings as SettingsIcon,
+  Security as SecurityIcon,
+  ContactSupport as ContactSupportIcon,
+  VisibilityOff,
+  Visibility
 } from '@mui/icons-material';
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
 
 const tabs = [
   { key: 'kiosks', label: 'Kiosks' },
@@ -83,6 +115,33 @@ const mockDisputes = [
   { id: 'dp2', doc: '99887766', user: 'John Otieno', reason: 'Lost again', status: 'RESOLVED' },
 ];
 const disputeStatusColor: Record<string, any> = { OPEN: 'warning', RESOLVED: 'success', REJECTED: 'error' };
+
+// Mock analytics data
+const documentsByMonth = [
+  { month: 'Jan', uploaded: 65, claimed: 45, dispatched: 40 },
+  { month: 'Feb', uploaded: 75, claimed: 55, dispatched: 48 },
+  { month: 'Mar', uploaded: 85, claimed: 65, dispatched: 58 },
+  { month: 'Apr', uploaded: 95, claimed: 75, dispatched: 68 },
+  { month: 'May', uploaded: 105, claimed: 85, dispatched: 78 },
+  { month: 'Jun', uploaded: 115, claimed: 95, dispatched: 88 },
+];
+
+const documentTypeDistribution = [
+  { name: 'National ID', value: 45 },
+  { name: 'Passport', value: 25 },
+  { name: 'Driver License', value: 20 },
+  { name: 'Student ID', value: 10 },
+];
+
+const kioskPerformance = [
+  { name: 'Nairobi CBD', success: 95, pending: 5 },
+  { name: 'Westlands', success: 88, pending: 12 },
+  { name: 'Kasarani', success: 92, pending: 8 },
+  { name: 'Embakasi', success: 85, pending: 15 },
+  { name: 'Githurai', success: 90, pending: 10 },
+];
+
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
 interface Kiosk {
   id: string;
@@ -125,6 +184,15 @@ export default function AdminPanelPage() {
   const [selectedKiosk, setSelectedKiosk] = useState<Kiosk | null>(null);
   const [editForm, setEditForm] = useState<Partial<Kiosk>>({});
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   const fetchKiosks = async () => {
     try {
@@ -210,7 +278,7 @@ export default function AdminPanelPage() {
           severity: 'success' 
         });
         setEditDialogOpen(false);
-        await fetchKiosks();
+        await fetchKiosks(); // Refresh the list
       } else {
         const error = await response.text();
         setSnackbar({ 
@@ -228,6 +296,62 @@ export default function AdminPanelPage() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    // Reset error state
+    setPasswordError('');
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setSnackbar({
+        open: true,
+        message: 'All password fields are required.',
+        severity: 'error'
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const response = await fetch('/api/admin/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSnackbar({
+          open: true,
+          message: 'Password updated successfully.',
+          severity: 'success'
+        });
+        setPasswordDialogOpen(false);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        setSnackbar({
+          open: true,
+          message: data.message || 'Failed to update password.',
+          severity: 'error'
+        });
+      }
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Error updating password. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -277,12 +401,13 @@ export default function AdminPanelPage() {
 
   const getStatusColor = (status: string | boolean) => {
     if (typeof status === 'boolean') {
-      return status ? 'success' : 'error';
+      return status ? 'success' : 'warning';
     }
     switch (status) {
-      case 'PENDING': return 'warning';
       case 'ACTIVE': return 'success';
-      case 'INACTIVE': return 'error';
+      case 'PENDING': return 'warning';
+      case 'SUSPENDED': return 'error';
+      case 'INACTIVE': return 'default';
       default: return 'default';
     }
   };
@@ -296,41 +421,250 @@ export default function AdminPanelPage() {
   };
 
   return (
-    <Box minHeight="100vh" bgcolor="#f4f6fa">
-      {/* AppBar/Header */}
-      <AppBar position="static" color="transparent" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar src="/myID.png" alt="MyID Logo" sx={{ width: 72, height: 72, bgcolor: 'white', boxShadow: 3 }} />
-            <Button href="/" component={Link} variant="text" color="primary" sx={{ minWidth: 0, p: 0, mr: 1, fontWeight: 700 }}>
-              Home
-            </Button>
-          </Box>
-          {session && (
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={() => signOut()}
-              aria-label="Sign out"
-            >
-              Sign out
-            </Button>
-          )}
-        </Toolbar>
+    <Box minHeight="100vh" bgcolor="#f8fafc">
+      {/* Enhanced Header */}
+      <AppBar position="static" color="transparent" elevation={0} sx={{ 
+        bgcolor: 'white', 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)'
+      }}>
+        <Container maxWidth="xl">
+          <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Avatar 
+                  src="/myID.png" 
+                  alt="MyID Logo" 
+                  sx={{ 
+                    width: 40, 
+                    height: 40, 
+                    bgcolor: '#3b82f6', 
+                    color: 'white',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  ID
+                </Avatar>
+                <Typography variant="h6" fontWeight={700} color="primary">
+                  Admin Portal
+                </Typography>
+              </Box>
+              <Stack direction="row" spacing={3} sx={{ ml: 4 }}>
+                <Button 
+                  variant="text" 
+                  color="inherit"
+                  sx={{ 
+                    fontWeight: 500, 
+                    color: tab !== 'analytics' ? 'primary.main' : 'text.secondary',
+                    '&:hover': { color: 'primary.main' }
+                  }}
+                  onClick={() => setTab('kiosks')}
+                >
+                  DASHBOARD
+                </Button>
+                <Button 
+                  variant="text" 
+                  color="inherit"
+                  sx={{ 
+                    fontWeight: 500, 
+                    color: tab === 'analytics' ? 'primary.main' : 'text.secondary',
+                    '&:hover': { color: 'primary.main' }
+                  }}
+                  onClick={() => setTab('analytics')}
+                >
+                  Analytics
+                </Button>
+              </Stack>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <IconButton 
+                color="inherit" 
+                sx={{ color: 'text.secondary' }}
+                onClick={() => setPasswordDialogOpen(true)}
+              >
+                <SettingsIcon />
+              </IconButton>
+              {session && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2 }}>
+                  <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: '14px' }}>
+                    AD
+                  </Avatar>
+                  <Box>
+                    <Typography variant="body2" fontWeight={600}>
+                      Admin
+                    </Typography>
+                  </Box>
+                  <Button 
+                    variant="outlined" 
+                    size="small"
+                    onClick={() => signOut()}
+                    sx={{ ml: 1 }}
+                  >
+                    Sign out
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          </Toolbar>
+        </Container>
       </AppBar>
-      {/* Hero Section */}
-      <Box sx={{ textAlign: 'center', mt: 6, mb: 4 }}>
-        <Typography variant="h4" fontWeight={800} color="primary.main" gutterBottom>
-          Admin Dashboard
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Manage kiosks, users, documents, disputes, and analytics.
-        </Typography>
-      </Box>
-      {/* Main Dashboard Layout */}
-      <Box maxWidth={1100} mx="auto" px={2}>
-        <Card sx={{ borderRadius: 4, boxShadow: 6 }}>
-          <CardContent>
+
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        {/* Dashboard Header */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight={700} color="text.primary" gutterBottom>
+            Admin Dashboard
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Manage kiosks, users, documents, disputes, and analytics.
+          </Typography>
+        </Box>
+
+        {/* Dashboard Cards */}
+        <Box sx={{ 
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
+          gap: 3,
+          mb: 4
+        }}>
+          <Card sx={{ 
+            p: 3, 
+            border: '1px solid', 
+            borderColor: 'divider',
+            boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+            '&:hover': { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                  Total Kiosks
+                </Typography>
+                <Typography variant="h4" fontWeight={700} color="text.primary">
+                  {kiosks.length}
+                </Typography>
+                <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>
+                  +12% from last month
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                bgcolor: 'primary.50', 
+                borderRadius: 2, 
+                p: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <StoreIcon sx={{ color: 'primary.main', fontSize: 28 }} />
+              </Box>
+            </Box>
+          </Card>
+
+          <Card sx={{ 
+            p: 3, 
+            border: '1px solid', 
+            borderColor: 'divider',
+            boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+            '&:hover': { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                  Active Users
+                </Typography>
+                <Typography variant="h4" fontWeight={700} color="text.primary">
+                  {users.filter(u => u.status === 'ACTIVE').length}
+                </Typography>
+                <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>
+                  +5% from last month
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                bgcolor: 'success.50', 
+                borderRadius: 2, 
+                p: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <PeopleIcon sx={{ color: 'success.main', fontSize: 28 }} />
+              </Box>
+            </Box>
+          </Card>
+
+          <Card sx={{ 
+            p: 3, 
+            border: '1px solid', 
+            borderColor: 'divider',
+            boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+            '&:hover': { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                  Documents
+                </Typography>
+                <Typography variant="h4" fontWeight={700} color="text.primary">
+                  {mockDocs.length}
+                </Typography>
+                <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>
+                  +8% from last month
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                bgcolor: 'info.50', 
+                borderRadius: 2, 
+                p: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <DescriptionIcon sx={{ color: 'info.main', fontSize: 28 }} />
+              </Box>
+            </Box>
+          </Card>
+
+          <Card sx={{ 
+            p: 3, 
+            border: '1px solid', 
+            borderColor: 'divider',
+            boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
+            '&:hover': { boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                  Revenue
+                </Typography>
+                <Typography variant="h4" fontWeight={700} color="text.primary">
+                  $4,700
+                </Typography>
+                <Typography variant="body2" color="success.main" sx={{ mt: 1 }}>
+                  +15% from last month
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                bgcolor: 'warning.50', 
+                borderRadius: 2, 
+                p: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <TrendingUpIcon sx={{ color: 'warning.main', fontSize: 28 }} />
+              </Box>
+            </Box>
+          </Card>
+        </Box>
+
+        {/* Main Content Area */}
+        <Card sx={{ 
+          borderRadius: 2, 
+          border: '1px solid', 
+          borderColor: 'divider',
+          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)'
+        }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs
               value={tab}
               onChange={(_, v) => setTab(v)}
@@ -338,12 +672,54 @@ export default function AdminPanelPage() {
               textColor="primary"
               variant="scrollable"
               scrollButtons="auto"
-              sx={{ mb: 4 }}
+              sx={{ 
+                px: 3,
+                '& .MuiTab-root': {
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  fontSize: '14px'
+                }
+              }}
             >
-              {tabs.map(t => (
-                <Tab key={t.key} value={t.key} label={t.label} sx={{ fontWeight: 700 }} />
-              ))}
+              <Tab 
+                value="kiosks" 
+                label="Kiosks" 
+                icon={<StoreIcon />} 
+                iconPosition="start"
+                sx={{ gap: 1 }}
+              />
+              <Tab 
+                value="users" 
+                label="Users" 
+                icon={<PeopleIcon />} 
+                iconPosition="start"
+                sx={{ gap: 1 }}
+              />
+              <Tab 
+                value="documents" 
+                label="Documents" 
+                icon={<DescriptionIcon />} 
+                iconPosition="start"
+                sx={{ gap: 1 }}
+              />
+              <Tab 
+                value="disputes" 
+                label="Disputes" 
+                icon={<GavelIcon />} 
+                iconPosition="start"
+                sx={{ gap: 1 }}
+              />
+              <Tab 
+                value="analytics" 
+                label="Analytics" 
+                icon={<AssessmentIcon />} 
+                iconPosition="start"
+                sx={{ gap: 1 }}
+              />
             </Tabs>
+          </Box>
+
+          <Box sx={{ p: 3 }}>
             {tab === 'kiosks' && (
               <Box>
                 <Typography variant="h6" color="primary" fontWeight={700} mb={2}>
@@ -591,9 +967,207 @@ export default function AdminPanelPage() {
             )}
             {tab === 'analytics' && (
               <Box>
-                <Typography variant="h6" color="primary" fontWeight={700} mb={2}>Analytics</Typography>
-                <Typography color="text.secondary" mb={2}>System analytics: search success, claims, pending docs, etc. (Mock data)</Typography>
-                <Button variant="contained" color="primary">View Analytics</Button>
+                <Typography variant="h6" color="primary" fontWeight={700} mb={3}>Analytics Dashboard</Typography>
+                
+                {/* Analytics Overview Cards */}
+                <Box display="flex" flexWrap="wrap" gap={3} mb={4}>
+                  <Box flex={{ xs: '0 0 100%', sm: '0 0 calc(50% - 12px)', md: '0 0 calc(25% - 18px)' }}>
+                    <Card sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Box sx={{ 
+                          bgcolor: 'primary.50', 
+                          p: 1, 
+                          borderRadius: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <TrendingUpIcon color="primary" />
+                        </Box>
+                        <Typography variant="subtitle1" fontWeight={600} ml={2}>Success Rate</Typography>
+                      </Box>
+                      <Typography variant="h4" fontWeight={700} color="primary.main">98%</Typography>
+                      <Typography variant="body2" color="success.main" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                        <TrendingUpIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                        +2.5% from last month
+                      </Typography>
+                    </Card>
+                  </Box>
+                  
+                  <Box flex={{ xs: '0 0 100%', sm: '0 0 calc(50% - 12px)', md: '0 0 calc(25% - 18px)' }}>
+                    <Card sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Box sx={{ 
+                          bgcolor: 'success.50', 
+                          p: 1, 
+                          borderRadius: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <DescriptionIcon color="success" />
+                        </Box>
+                        <Typography variant="subtitle1" fontWeight={600} ml={2}>Total Documents</Typography>
+                      </Box>
+                      <Typography variant="h4" fontWeight={700} color="success.main">540</Typography>
+                      <Typography variant="body2" color="success.main" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                        <TrendingUpIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                        +8% from last month
+                      </Typography>
+                    </Card>
+                  </Box>
+                  
+                  <Box flex={{ xs: '0 0 100%', sm: '0 0 calc(50% - 12px)', md: '0 0 calc(25% - 18px)' }}>
+                    <Card sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Box sx={{ 
+                          bgcolor: 'warning.50', 
+                          p: 1, 
+                          borderRadius: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <StoreIcon color="warning" />
+                        </Box>
+                        <Typography variant="subtitle1" fontWeight={600} ml={2}>Active Kiosks</Typography>
+                      </Box>
+                      <Typography variant="h4" fontWeight={700} color="warning.main">{kiosks.length}</Typography>
+                      <Typography variant="body2" color="success.main" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                        <TrendingUpIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                        +3 new this month
+                      </Typography>
+                    </Card>
+                  </Box>
+                  
+                  <Box flex={{ xs: '0 0 100%', sm: '0 0 calc(50% - 12px)', md: '0 0 calc(25% - 18px)' }}>
+                    <Card sx={{ p: 3, borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Box sx={{ 
+                          bgcolor: 'error.50', 
+                          p: 1, 
+                          borderRadius: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <PeopleIcon color="error" />
+                        </Box>
+                        <Typography variant="subtitle1" fontWeight={600} ml={2}>Active Users</Typography>
+                      </Box>
+                      <Typography variant="h4" fontWeight={700} color="error.main">
+                        {users.filter(u => u.status === 'ACTIVE').length}
+                      </Typography>
+                      <Typography variant="body2" color="success.main" sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                        <TrendingUpIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                        +5 new this month
+                      </Typography>
+                    </Card>
+                  </Box>
+                </Box>
+
+                {/* Charts Section */}
+                <Box display="flex" flexWrap="wrap" gap={3}>
+                  {/* Document Trends */}
+                  <Box flex={{ xs: '0 0 100%', lg: '0 0 calc(66.666% - 12px)' }}>
+                    <Card sx={{ p: 3, height: '100%', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <Typography variant="h6" fontWeight={600} mb={3}>Document Processing Trends</Typography>
+                      <Box sx={{ width: '100%', height: 300 }}>
+                        <ResponsiveContainer>
+                          <LineChart data={documentsByMonth}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="uploaded" stroke="#3b82f6" strokeWidth={2} />
+                            <Line type="monotone" dataKey="claimed" stroke="#10b981" strokeWidth={2} />
+                            <Line type="monotone" dataKey="dispatched" stroke="#f59e0b" strokeWidth={2} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </Box>
+                    </Card>
+                  </Box>
+
+                  {/* Document Types Distribution */}
+                  <Box flex={{ xs: '0 0 100%', lg: '0 0 calc(33.333% - 12px)' }}>
+                    <Card sx={{ p: 3, height: '100%', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <Typography variant="h6" fontWeight={600} mb={3}>Document Types Distribution</Typography>
+                      <Box sx={{ width: '100%', height: 300 }}>
+                        <ResponsiveContainer>
+                          <PieChart>
+                            <Pie
+                              data={documentTypeDistribution}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={60}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              paddingAngle={5}
+                              dataKey="value"
+                            >
+                              {documentTypeDistribution.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </Box>
+                    </Card>
+                  </Box>
+
+                  {/* Kiosk Performance */}
+                  <Box flex="0 0 100%">
+                    <Card sx={{ p: 3, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <Typography variant="h6" fontWeight={600} mb={3}>Kiosk Performance</Typography>
+                      <Box sx={{ width: '100%', height: 300 }}>
+                        <ResponsiveContainer>
+                          <BarChart data={kioskPerformance}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="success" stackId="a" fill="#10b981" />
+                            <Bar dataKey="pending" stackId="a" fill="#f59e0b" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </Box>
+                    </Card>
+                  </Box>
+                </Box>
+
+                {/* Key Metrics Section */}
+                <Box mt={4}>
+                  <Typography variant="h6" fontWeight={600} mb={3}>Key Performance Metrics</Typography>
+                  <Box display="flex" flexWrap="wrap" gap={3}>
+                    <Box flex={{ xs: '0 0 100%', md: '0 0 calc(33.333% - 16px)' }}>
+                      <Card sx={{ p: 3, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                        <Typography variant="subtitle1" color="text.secondary" gutterBottom>Average Processing Time</Typography>
+                        <Typography variant="h4" fontWeight={700} color="primary.main">2.5 days</Typography>
+                        <Typography variant="body2" color="text.secondary" mt={1}>From upload to successful claim</Typography>
+                      </Card>
+                    </Box>
+                    
+                    <Box flex={{ xs: '0 0 100%', md: '0 0 calc(33.333% - 16px)' }}>
+                      <Card sx={{ p: 3, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                        <Typography variant="subtitle1" color="text.secondary" gutterBottom>User Satisfaction</Typography>
+                        <Typography variant="h4" fontWeight={700} color="success.main">4.8/5.0</Typography>
+                        <Typography variant="body2" color="text.secondary" mt={1}>Based on user feedback</Typography>
+                      </Card>
+                    </Box>
+                    
+                    <Box flex={{ xs: '0 0 100%', md: '0 0 calc(33.333% - 16px)' }}>
+                      <Card sx={{ p: 3, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                        <Typography variant="subtitle1" color="text.secondary" gutterBottom>System Uptime</Typography>
+                        <Typography variant="h4" fontWeight={700} color="warning.main">99.9%</Typography>
+                        <Typography variant="body2" color="text.secondary" mt={1}>Last 30 days</Typography>
+                      </Card>
+                    </Box>
+                  </Box>
+                </Box>
               </Box>
             )}
 
@@ -802,6 +1376,115 @@ export default function AdminPanelPage() {
               </DialogActions>
             </Dialog>
 
+            {/* Password Change Dialog */}
+            <Dialog 
+              open={passwordDialogOpen} 
+              onClose={() => !passwordLoading && setPasswordDialogOpen(false)}
+              maxWidth="sm"
+              fullWidth
+            >
+              <DialogTitle>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <SecurityIcon color="primary" />
+                  <Typography variant="h6" component="span">
+                    Change Password
+                  </Typography>
+                </Box>
+              </DialogTitle>
+              <DialogContent>
+                <Box sx={{ mt: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="Current Password"
+                    type={showCurrentPassword ? 'text' : 'password'}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    margin="normal"
+                    required
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                            edge="end"
+                          >
+                            {showCurrentPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="New Password"
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    margin="normal"
+                    required
+                    error={!!passwordError}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowNewPassword(!showNewPassword)}
+                            edge="end"
+                          >
+                            {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Confirm New Password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    margin="normal"
+                    required
+                    error={!!passwordError}
+                    helperText={passwordError}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            edge="end"
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+              </DialogContent>
+              <DialogActions sx={{ p: 2.5, pt: 0 }}>
+                <Button 
+                  onClick={() => {
+                    setPasswordDialogOpen(false);
+                    setPasswordError('');
+                    setCurrentPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                  }} 
+                  disabled={passwordLoading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handlePasswordChange}
+                  variant="contained"
+                  disabled={passwordLoading || !currentPassword || !newPassword || !confirmPassword}
+                  startIcon={passwordLoading ? <CircularProgress size={20} /> : <SecurityIcon />}
+                >
+                  {passwordLoading ? 'Updating...' : 'Update Password'}
+                </Button>
+              </DialogActions>
+            </Dialog>
+
             {/* Snackbar for notifications */}
             <Snackbar 
               open={snackbar.open} 
@@ -815,12 +1498,195 @@ export default function AdminPanelPage() {
                 {snackbar.message}
               </Alert>
             </Snackbar>
-          </CardContent>
+          </Box>
         </Card>
+      </Container>
+
+      {/* Statistics Bar */}
+      <Box sx={{ 
+        bgcolor: '#3b82f6', 
+        color: 'white', 
+        py: 6,
+        borderRadius: '12px',
+        mx: 2,
+        mb: 0
+      }}>
+        <Box sx={{ 
+          maxWidth: 1200, 
+          mx: 'auto', 
+          px: 2,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          gap: 4
+        }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {kiosks.length}
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Total Kiosks
+            </Typography>
+          </Box>
+          
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {users.filter(u => u.status === 'ACTIVE').length}
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Active Users
+            </Typography>
+          </Box>
+          
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {mockDocs.length}
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9 }}>
+              Documents Managed
+            </Typography>
+          </Box>
+        </Box>
       </Box>
-      {/* Footer */}
-      <Box sx={{ textAlign: 'center', py: 3, color: 'text.secondary', mt: 6 }}>
-        <Link href="/about">About</Link> | <Link href="/privacy">Privacy</Link> | <Link href="/terms">Terms</Link>
+
+      {/* Main Footer */}
+      <Box sx={{ 
+        bgcolor: '#ffffff', 
+        py: 8,
+        borderTop: '1px solid #e5e7eb'
+      }}>
+        <Box sx={{ 
+          maxWidth: 1200, 
+          mx: 'auto', 
+          px: 2,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 6
+        }}>
+          {/* MyID Column */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
+              MyID Admin
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#6b7280', lineHeight: 1.6, mb: 3 }}>
+              Administrative portal for managing the MyID lost and found service platform.
+            </Typography>
+          </Box>
+
+          {/* Management Column */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
+              Management
+            </Typography>
+            <Stack spacing={2}>
+              <Link href="/admin" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Kiosk Management
+              </Link>
+              <Link href="/admin" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                User Management
+              </Link>
+              <Link href="/admin" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Document Management
+              </Link>
+              <Link href="/admin" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Dispute Resolution
+              </Link>
+            </Stack>
+          </Box>
+
+          {/* Company Column */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
+              Company
+            </Typography>
+            <Stack spacing={2}>
+              <Link href="/about" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                About Us
+              </Link>
+              <Link href="/privacy" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Privacy Policy
+              </Link>
+              <Link href="/terms" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Terms of Service
+              </Link>
+              <Link href="/contact" style={{ color: '#6b7280', textDecoration: 'none' }}>
+                Contact Us
+              </Link>
+            </Stack>
+          </Box>
+
+          {/* Connect Column */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
+              Connect
+            </Typography>
+            <Stack spacing={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ 
+                  width: 40, 
+                  height: 40, 
+                  bgcolor: '#eff6ff', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <CheckCircleIcon sx={{ color: '#3b82f6', fontSize: 20 }} />
+                </Box>
+                <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                  Certified
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ 
+                  width: 40, 
+                  height: 40, 
+                  bgcolor: '#eff6ff', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <SecurityIcon sx={{ color: '#3b82f6', fontSize: 20 }} />
+                </Box>
+                <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                  Secure
+                </Typography>
+              </Box>
+              
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ 
+                  width: 40, 
+                  height: 40, 
+                  bgcolor: '#eff6ff', 
+                  borderRadius: '50%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <ContactSupportIcon sx={{ color: '#3b82f6', fontSize: 20 }} />
+                </Box>
+                <Typography variant="body2" sx={{ color: '#6b7280' }}>
+                  Trusted
+                </Typography>
+              </Box>
+            </Stack>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Copyright */}
+      <Box sx={{ 
+        bgcolor: '#f9fafb', 
+        py: 3, 
+        borderTop: '1px solid #e5e7eb',
+        textAlign: 'center'
+      }}>
+        <Typography variant="body2" sx={{ color: '#6b7280' }}>
+          © 2025 MyID Admin Portal. All rights reserved.
+        </Typography>
       </Box>
     </Box>
   );

@@ -19,12 +19,16 @@ model User {
   updatedAt     DateTime                @updatedAt
   password      String?
   status        UserStatus              @default(PENDING)
+  provider      String?
+  providerId    String?
   disputes      Dispute[]
   claims        Document[]              @relation("UserClaims")
   documents     Document[]              @relation("UserDocuments")
   statusChanges DocumentStatusHistory[] @relation("UserStatusChanges")
   notifications Notification[]
   managedKiosks Kiosk[]                 @relation("KioskManagers")
+
+  @@index([provider, providerId])
 }
 
 model Document {
@@ -174,7 +178,7 @@ enum DocumentStatus {
 enum KioskStatus {
   PENDING
   ACTIVE
-  INACTIVE
+  SUSPENDED
 }
 
 enum NotificationType {

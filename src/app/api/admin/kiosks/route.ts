@@ -45,7 +45,7 @@ export async function GET(req: Request) {
       phone: kiosk.phone,
       email: kiosk.email || '',
       contactPerson: kiosk.contactPerson || '',
-      status: kiosk.isActive ? 'ACTIVE' : 'PENDING',
+      status: kiosk.status || (kiosk.isActive ? 'ACTIVE' : 'PENDING'),
       isActive: kiosk.isActive,
       address: kiosk.address || '',
       description: kiosk.description || '',
@@ -149,6 +149,7 @@ export async function PUT(request: Request) {
 
         // Update status and isActive
         if (data.status) {
+          updateData.status = data.status;
           updateData.isActive = data.status === 'ACTIVE';
         }
 
@@ -180,23 +181,28 @@ export async function PUT(request: Request) {
     }
 
     let isActive: boolean;
+    let status: string;
     let actionMessage: string;
 
     switch (action) {
       case 'approve':
         isActive = true;
+        status = 'ACTIVE';
         actionMessage = 'Kiosk approved successfully';
         break;
       case 'reject':
         isActive = false;
+        status = 'PENDING';
         actionMessage = 'Kiosk rejected successfully';
         break;
       case 'suspend':
         isActive = false;
+        status = 'SUSPENDED';
         actionMessage = 'Kiosk suspended successfully';
         break;
       case 'activate':
         isActive = true;
+        status = 'ACTIVE';
         actionMessage = 'Kiosk activated successfully';
         break;
       default:
@@ -211,6 +217,7 @@ export async function PUT(request: Request) {
       where: { id },
       data: {
         isActive: isActive,
+        status: status as any,
         updatedAt: new Date()
       }
     });
