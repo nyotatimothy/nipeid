@@ -12,9 +12,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false
   },
-  experimental: {
-    serverActions: true
-  },
   async headers() {
     return [
       {
