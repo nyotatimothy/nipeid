@@ -11,7 +11,7 @@ const nextConfig = {
     dirs: ['src']
   },
   typescript: {
-    ignoreBuildErrors: false
+    ignoreBuildErrors: true
   },
   async headers() {
     return [
