@@ -77,14 +77,14 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
     setSubmitError(null);
-
+    
     try {
       const result = await signIn('credentials', {
         redirect: false,
         email: form.email,
         password: form.password,
       });
-
+      
       if (result?.error) {
         setSubmitError('Invalid email or password');
         return;
@@ -145,15 +145,15 @@ export default function LoginPage() {
 
                 <form onSubmit={handleSubmit}>
                   <Stack spacing={3}>
-                    <TextField
+            <TextField
                       label="Email Address"
-                      type="email"
+              type="email"
                       value={form.email}
                       onChange={handleChange('email')}
                       error={!!errors.email}
                       helperText={errors.email}
                       fullWidth
-                      required
+              required
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -161,17 +161,17 @@ export default function LoginPage() {
                           </InputAdornment>
                         ),
                       }}
-                    />
+            />
 
-                    <TextField
-                      label="Password"
+            <TextField
+              label="Password"
                       type={showPassword ? 'text' : 'password'}
                       value={form.password}
                       onChange={handleChange('password')}
                       error={!!errors.password}
                       helperText={errors.password}
                       fullWidth
-                      required
+              required
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -189,7 +189,7 @@ export default function LoginPage() {
                           </InputAdornment>
                         ),
                       }}
-                    />
+            />
 
                     {submitError && (
                       <Alert severity="error">
@@ -197,16 +197,16 @@ export default function LoginPage() {
                       </Alert>
                     )}
 
-                    <Button
-                      type="submit"
-                      variant="contained"
+            <Button
+              type="submit"
+              variant="contained"
                       disabled={isSubmitting}
                       sx={{
                         py: 1.5,
                         bgcolor: '#059669',
                         '&:hover': { bgcolor: '#047857' },
                       }}
-                    >
+            >
                       {isSubmitting ? (
                         <>
                           <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
@@ -215,7 +215,7 @@ export default function LoginPage() {
                       ) : (
                         'Sign In'
                       )}
-                    </Button>
+            </Button>
 
                     <Box sx={{ position: 'relative', my: 3 }}>
                       <Divider>
@@ -223,7 +223,7 @@ export default function LoginPage() {
                           OR
                         </Typography>
                       </Divider>
-                    </Box>
+          </Box>
 
                     <Button
                       variant="outlined"
@@ -250,8 +250,8 @@ export default function LoginPage() {
                     </Typography>
                   </Stack>
                 </form>
-              </CardContent>
-            </Card>
+        </CardContent>
+      </Card>
           </Container>
         </Container>
       </Box>

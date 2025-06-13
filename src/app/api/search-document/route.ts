@@ -29,9 +29,9 @@ export async function GET(req: NextRequest) {
     const documents = await prisma.document.findMany({
       where: {
         OR: [
-          { documentNumber: { contains: searchQuery, mode: 'insensitive' } },
-          { firstName: { contains: searchQuery, mode: 'insensitive' } },
-          { lastName: { contains: searchQuery, mode: 'insensitive' } }
+          { documentNumber: { contains: searchQuery } },
+          { firstName: { contains: searchQuery } },
+          { lastName: { contains: searchQuery } }
         ],
         ...(documentType && { documentType })
       },
@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Search error:', error);
     return NextResponse.json(
-      { error: 'Failed to search for document' },
+      { success: false, documents: [], error: 'Failed to search for document' },
       { status: 500 }
     );
   }

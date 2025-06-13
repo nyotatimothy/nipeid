@@ -1,4 +1,34 @@
 import { NextResponse } from 'next/server';
+<<<<<<< HEAD
+import { prisma } from '@/lib/prisma';
+import { maskName, maskDocNumber } from '@/lib/masking';
+import Fuse from 'fuse.js';
+
+export async function POST(req: Request) {
+  const { query } = await req.json();
+  
+  if (!query || typeof query !== 'string') {
+    return NextResponse.json({ results: [] });
+  }
+
+  // Get all documents
+  const docs = await prisma.document.findMany({
+    take: 50, // Increased limit for fuzzy search
+  });
+
+  // Configure Fuse.js for fuzzy searching
+  const fuseOptions = {
+    keys: ['firstName', 'middleName', 'lastName', 'documentNumber'],
+    threshold: 0.4, // Lower = more strict matching
+    minMatchCharLength: 2, // Minimum of 2 characters to match
+  };
+
+  const fuse = new Fuse(docs, fuseOptions);
+  const searchResults = fuse.search(query);
+
+  // Map the results to the expected format
+  const results = searchResults.slice(0, 10).map(({ item: doc }) => ({
+=======
 import { PrismaClient, Prisma } from '@prisma/client';
 import { maskName, maskDocNumber } from '@/lib/masking';
 import Fuse from 'fuse.js';
@@ -86,11 +116,15 @@ export async function POST(req: Request) {
 
 function mapDocumentToResult(doc: any) {
   return {
+>>>>>>> github/main
     name: `${maskName(doc.firstName)} ${maskName(doc.middleName || '')} ${maskName(doc.lastName)}`.trim(),
     docNumber: maskDocNumber(doc.documentNumber),
     type: doc.documentType || 'NATIONAL_ID',
     status: doc.status,
+<<<<<<< HEAD
+=======
     // Include full document data for successful claims (will be revealed after payment)
+>>>>>>> github/main
     fullData: {
       id: doc.id,
       firstName: doc.firstName,
@@ -107,5 +141,11 @@ function mapDocumentToResult(doc: any) {
       status: doc.status,
       createdAt: doc.createdAt
     }
+<<<<<<< HEAD
+  }));
+
+  return NextResponse.json({ results });
+=======
   };
+>>>>>>> github/main
 } 

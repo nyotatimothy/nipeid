@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import Link from 'next/link';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
@@ -62,8 +63,7 @@ import {
   Warning as WarningIcon,
   Error as ErrorIcon,
   CheckCircle as CheckCircleIcon,
-  Email as EmailIcon,
-  Report as ReportIcon
+  Email as EmailIcon
 } from '@mui/icons-material';
 import MobileNavigation from '@/components/MobileNavigation';
 import WebNavigation from '@/components/WebNavigation';
@@ -76,14 +76,6 @@ export default function Home() {
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportSubmitted, setReportSubmitted] = useState(false);
-  const { data: session } = useSession();
-  const router = useRouter();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { t } = useTranslation();
-  const translatedDocTypes = t<Array<{ value: string; label: string }>>('documentTypes');
-
-  // New form states
   const [reportForm, setReportForm] = useState({
     fullName: "",
     phone: "",
@@ -100,6 +92,13 @@ export default function Home() {
   const searchResultsRef = useRef<HTMLDivElement>(null);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchError, setSearchError] = useState<string | null>(null);
+
+  const { data: session } = useSession();
+  const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation();
+  const translatedDocTypes = t<Array<{ value: string; label: string }>>('documentTypes') || [];
 
   // Auto-redirect authenticated users to their dashboards
   useEffect(() => {
@@ -136,23 +135,25 @@ export default function Home() {
     try {
       setIsSearching(true);
       setSearchError(null);
+      setSearchPerformed(false);
       
       const response = await fetch(
         `/api/search-document?documentNumber=${encodeURIComponent(documentNumber)}&documentType=${documentType}`,
         { signal: AbortSignal.timeout(10000) } // 10 second timeout
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to search for document');
+        throw new Error(data.error || 'Failed to search for document');
       }
 
-      const data = await response.json();
       setSearchResults(data.documents || []);
       setSearchPerformed(true);
 
       if (data.isExisting) {
         setSearchError(data.message);
-      }
+  }
 
       // Scroll to results after a short delay to ensure rendering is complete
     setTimeout(() => {
@@ -167,6 +168,8 @@ export default function Home() {
     } catch (error) {
       console.error('Search error:', error);
       setSearchError(error instanceof Error ? error.message : 'Failed to search for document');
+      setSearchResults([]);
+      setSearchPerformed(true);
     } finally {
       setIsSearching(false);
     }
@@ -216,7 +219,7 @@ export default function Home() {
       setSubmitError(error instanceof Error ? error.message : 'Failed to submit report');
                           } finally {
       setIsSubmitting(false);
-    }
+                          }
   };
 
   return (
@@ -242,7 +245,7 @@ export default function Home() {
                   width={120} 
                   height={120}
                   style={{ objectFit: 'contain' }}
-                />
+                        />
                 <Typography variant="h4" sx={{ color: '#059669', fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
                   {t('common.appName')}
                 </Typography>
@@ -271,7 +274,7 @@ export default function Home() {
                   mx: 'auto',
                   fontWeight: 500
                 }}
-              >
+                        >
                 {t('home.subtitle')}
               </Typography>
               <Typography
@@ -313,8 +316,8 @@ export default function Home() {
                       value={documentType}
                       label={t('home.searchForm.documentType')}
                       onChange={(e) => setDocumentType(e.target.value)}
-                    >
-                      {translatedDocTypes.map((type) => (
+                        >
+                      {translatedDocTypes.map((type: { value: string; label: string }) => (
                         <MenuItem key={type.value} value={type.value}>
                           {type.label}
                         </MenuItem>
@@ -322,9 +325,9 @@ export default function Home() {
                     </Select>
                   </FormControl>
                   </Box>
-                        <Button
+                      <Button
                   fullWidth
-                          variant="contained"
+                        variant="contained"
                   onClick={handleSearch}
                   disabled={isSearching}
                   sx={{ 
@@ -342,14 +345,14 @@ export default function Home() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white' }}>
                       <CircularProgress size={24} sx={{ color: 'inherit' }} />
                       {t('home.searchForm.searching')}
-                  </Box>
+            </Box>
                   ) : (
-                    <>
+                    <React.Fragment>
                       <SearchIcon sx={{ mr: 1 }} />
                       {t('home.searchForm.searchButton')}
-                    </>
-                  )}
-                      </Button>
+                    </React.Fragment>
+                    )}
+                </Button>
             </Stack>
           </CardContent>
         </Card>
@@ -381,20 +384,20 @@ export default function Home() {
                             Found at: {doc.foundLocation}
                           </Typography>
                         </Card>
-              ))}
-            </Stack>
-          </CardContent>
-        </Card>
+                      ))}
+                  </Stack>
+                  </CardContent>
+                </Card>
               ) : (
                 <Fade in={true} timeout={500}>
                   <Card 
                     elevation={3} 
-                    sx={{ 
-                      borderRadius: 2, 
+                          sx={{
+                            borderRadius: 2,
                       bgcolor: '#f0f7ff',  // Light blue background
                       border: '1px solid rgba(28, 100, 242, 0.1)',
                       boxShadow: '0 4px 12px rgba(28, 100, 242, 0.08)'
-                    }}
+                          }}
                   >
                     <CardContent sx={{ p: 4 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
@@ -407,17 +410,17 @@ export default function Home() {
                             alignItems: 'center',
                             justifyContent: 'center'
                           }}
-                        >
+                    >
                           <InfoIcon sx={{ color: '#1c64f2', fontSize: 32 }} />
-                  </Box>
-                        <Box>
+                </Box>
+                <Box>
                           <Typography variant="h5" sx={{ color: '#1c64f2', fontWeight: 600, mb: 0.5 }}>
                             Document Not Found
-                          </Typography>
+                    </Typography>
                           <Typography variant="body2" sx={{ color: '#4b5563' }}>
                             Don't worry, we can help you report it
-                          </Typography>
-                        </Box>
+                    </Typography>
+                      </Box>
                       </Box>
                       <Typography 
                         variant="body1" 
@@ -431,41 +434,41 @@ export default function Home() {
                         }}
                       >
                         {searchError || "We couldn't find your document in our system. Would you like to report it as lost?"}
-                          </Typography>
+                      </Typography>
                       {!searchError && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                       <Button
                         variant="contained"
-                        onClick={() => setShowReportDialog(true)}
-                        startIcon={<ReportIcon />}
-                        sx={{
-                          bgcolor: '#1c64f2',
-                          '&:hover': { 
-                            bgcolor: '#1e40af',
-                            transform: 'translateY(-1px)',
-                            boxShadow: '0 4px 12px rgba(28, 100, 242, 0.2)'
-                          },
-                          transition: 'all 0.2s ease-in-out',
-                          color: 'white',
-                          px: 4,
-                          py: 1.5,
-                          borderRadius: 1.5,
-                          '& .MuiSvgIcon-root': { 
-                            color: 'white',
-                            mr: 1 
-                          }
-                        }}
+                            onClick={() => setShowReportDialog(true)}
+                            startIcon={<WarningIcon />}
+                            sx={{
+                              bgcolor: '#1c64f2',
+                              '&:hover': { 
+                                bgcolor: '#1e40af',
+                                transform: 'translateY(-1px)',
+                                boxShadow: '0 4px 12px rgba(28, 100, 242, 0.2)'
+                              },
+                              transition: 'all 0.2s ease-in-out',
+                              color: 'white',
+                              px: 4,
+                              py: 1.5,
+                              borderRadius: 1.5,
+                              '& .MuiSvgIcon-root': { 
+                                color: 'white',
+                                mr: 1 
+                              }
+                            }}
                       >
-                        Report Lost Document
+                            Report Lost Document
                       </Button>
                     </Box>
                       )}
                     </CardContent>
                   </Card>
-                </Fade>
+              </Fade>
               )}
             </Container>
-                      </Box>
+          </Box>
         )}
 
         {/* Report Dialog */}
@@ -485,7 +488,7 @@ export default function Home() {
             <Box sx={{ mb: 4 }}>
               <Typography variant="h6" sx={{ mb: 2, color: '#1c64f2' }}>
                 Document Information
-              </Typography>
+        </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
                   <Box sx={{ flex: '1 1 300px' }}>
@@ -503,7 +506,7 @@ export default function Home() {
                         ))}
                       </Select>
                     </FormControl>
-                  </Box>
+        </Box>
                   <Box sx={{ flex: '1 1 300px' }}>
                     <TextField
                       label="Document Number (if known)"
@@ -512,8 +515,8 @@ export default function Home() {
                       fullWidth
                       helperText="It's okay if you don't remember the exact number"
                     />
-                  </Box>
-                </Box>
+      </Box>
+              </Box>
                 <Box sx={{ width: '100%' }}>
                   <TextField
                     label="Names as they appear on the document"
@@ -522,15 +525,15 @@ export default function Home() {
                     fullWidth
                     required
                   />
-                </Box>
               </Box>
-            </Box>
+        </Box>
+      </Box>
 
             {/* Contact Information Section */}
             <Box>
               <Typography variant="h6" sx={{ mb: 2, color: '#1c64f2' }}>
                 Your Contact Information
-              </Typography>
+            </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <Box sx={{ width: '100%' }}>
                   <TextField
@@ -540,7 +543,7 @@ export default function Home() {
                     fullWidth
                     required
                   />
-                </Box>
+          </Box>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
                   <Box sx={{ flex: '1 1 300px' }}>
                     <TextField
@@ -550,7 +553,7 @@ export default function Home() {
                       fullWidth
                       required
                     />
-                  </Box>
+          </Box>
                   <Box sx={{ flex: '1 1 300px' }}>
                     <TextField
                       label="Email Address"
@@ -560,10 +563,10 @@ export default function Home() {
                       fullWidth
                       required
                     />
-                  </Box>
-                </Box>
-              </Box>
-            </Box>
+          </Box>
+        </Box>
+      </Box>
+          </Box>
           </DialogContent>
           <DialogActions sx={{ p: 3, borderTop: '1px solid #e5e7eb' }}>
             <Button onClick={() => setShowReportDialog(false)}>Cancel</Button>
@@ -621,7 +624,7 @@ export default function Home() {
                       <Typography fontWeight={600}>Search</Typography>
                       <Typography variant="body2" color="text.secondary">
                         Enter your document details
-        </Typography>
+            </Typography>
                     </TimelineContent>
                   </TimelineItem>
                   <TimelineItem>
@@ -633,7 +636,7 @@ export default function Home() {
                       <Typography fontWeight={600}>Verify</Typography>
                       <Typography variant="body2" color="text.secondary">
                         Confirm your identity
-              </Typography>
+            </Typography>
                     </TimelineContent>
                   </TimelineItem>
                   <TimelineItem>

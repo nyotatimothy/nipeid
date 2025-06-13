@@ -1,0 +1,15 @@
+name: Deploy to Vercel PPE
+
+on:
+  push:
+    branches:
+      - ppe
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel PPE Deploy Hook
+        run: |
+          curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_8wX3pUHEt5XIyDktfxeF71bmd0ZA/qmR99u9S0f

@@ -27,143 +27,90 @@ model User {
   DocumentStatusHistory               DocumentStatusHistory[]
   Notification                        Notification[]
   Kiosk                               Kiosk[]                 @relation("KioskManagers")
-
-  @@index([provider, providerId])
 }
 
 model Document {
-  id                              String                  @id @default(cuid())
-  firstName                       String
-  middleName                      String?
-  lastName                        String
-  dateOfBirth                     DateTime
-  documentNumber                  String
-  foundLocation                   String
-  foundDistrict                   String
-  foundDivision                   String
-  foundSubLocation                String
-  dateFound                       DateTime
-  condition                       Condition
-  kioskId                         String
-  posterId                        String
-  claimedById                     String?
-  status                          DocumentStatus          @default(UPLOADED)
-  createdAt                       DateTime                @default(now())
-  updatedAt                       DateTime                @updatedAt
-  expiredAt                       DateTime?
-  documentType                    DocumentType
-  Dispute                         Dispute[]
-  User_Document_claimedByIdToUser User?                   @relation("Document_claimedByIdToUser", fields: [claimedById], references: [id])
-  Kiosk                           Kiosk                   @relation(fields: [kioskId], references: [id])
-  User_Document_posterIdToUser    User                    @relation("Document_posterIdToUser", fields: [posterId], references: [id])
-  DocumentStatusHistory           DocumentStatusHistory[]
-  Notification                    Notification[]
+  id              String                  @id @default(cuid())
+  documentNumber  String                  @unique
+  documentType    DocumentType
+  firstName       String?
+  lastName        String?
+  status          DocumentStatus          @default(UPLOADED)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  claimedById     String?
+  posterId        String?
+  kioskId         String?
+  Dispute         Dispute[]
+  claimedBy       User?                   @relation("Document_claimedByIdToUser", fields: [claimedById], references: [id])
+  kiosk           Kiosk?                  @relation(fields: [kioskId], references: [id])
+  poster          User?                   @relation("Document_posterIdToUser", fields: [posterId], references: [id])
+  DocumentHistory DocumentStatusHistory[]
+  Notification    Notification[]
+}
+
+model Kiosk {
+  id        String     @id @default(cuid())
+  name      String
+  location  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Document  Document[]
+  managers  User[]     @relation("KioskManagers")
+}
+
+model DocumentStatusHistory {
+  id         String         @id @default(cuid())
+  documentId String
+  userId     String
+  status     DocumentStatus
+  createdAt  DateTime       @default(now())
+  document   Document       @relation(fields: [documentId], references: [id])
+  user       User           @relation(fields: [userId], references: [id])
+}
+
+model Dispute {
+  id         String   @id @default(cuid())
+  documentId String
+  userId     String
+  reason     String
+  status     String   @default("PENDING")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  document   Document @relation(fields: [documentId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id         String    @id @default(cuid())
+  userId     String?
+  documentId String?
+  message    String
+  read       Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+  document   Document? @relation(fields: [documentId], references: [id])
+  user       User?     @relation(fields: [userId], references: [id])
 }
 
 model ContactRequest {
   id             String        @id @default(cuid())
-  name           String
-  email          String
-  phone          String?
   documentNumber String?
+  documentType   DocumentType?
   firstName      String?
   lastName       String?
-  dateOfBirth    DateTime?
-  searchQuery    String?
-  notified       Boolean       @default(false)
+  email          String?
+  phone          String?
+  message        String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  documentType   DocumentType?
-}
-
-model Kiosk {
-  id             String      @id @default(cuid())
-  name           String      @unique
-  location       String
-  phone          String
-  hours          String?
-  isActive       Boolean     @default(true)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  contactPerson  String?
-  email          String?     @unique
-  password       String?
-  status         KioskStatus @default(PENDING)
-  accessInfo     String?
-  address        String?
-  city           String?
-  county         String?
-  description    String?
-  fridayHours    String?
-  landmarks      String?
-  latitude       Float?
-  longitude      Float?
-  mondayHours    String?
-  parkingInfo    String?
-  postalCode     String?
-  saturdayHours  String?
-  sundayHours    String?
-  thursdayHours  String?
-  tuesdayHours   String?
-  wednesdayHours String?
-  Document       Document[]
-  User           User[]      @relation("KioskManagers")
-}
-
-model Dispute {
-  id          String          @id
-  userId      String
-  documentId  String
-  category    DisputeCategory
-  explanation String?
-  status      DisputeStatus   @default(PENDING)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime
-  Document    Document        @relation(fields: [documentId], references: [id])
-  User        User            @relation(fields: [userId], references: [id])
-}
-
-model DocumentStatusHistory {
-  id          String         @id
-  documentId  String
-  status      DocumentStatus
-  changedById String?
-  createdAt   DateTime       @default(now())
-  User        User?          @relation(fields: [changedById], references: [id])
-  Document    Document       @relation(fields: [documentId], references: [id])
-}
-
-model Notification {
-  id         String              @id
-  userId     String?
-  documentId String?
-  type       NotificationType
-  channel    NotificationChannel
-  message    String
-  sent       Boolean             @default(false)
-  createdAt  DateTime            @default(now())
-  Document   Document?           @relation(fields: [documentId], references: [id])
-  User       User?               @relation(fields: [userId], references: [id])
-}
-
-model SupportTicket {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  subject   String
-  message   String
-  status    String   @default("OPEN")
-  ipAddress String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 enum Role {
-  VISITOR
   USER
-  POSTER
   KIOSK_MANAGER
   ADMIN
+  POSTER
 }
 
 enum DocumentType {
@@ -172,26 +119,6 @@ enum DocumentType {
   BIRTH_CERTIFICATE
   DRIVING_LICENSE
   OTHER
-}
-
-enum Condition {
-  GOOD
-  MEDIUM
-  BAD
-}
-
-enum DisputeCategory {
-  WRONG_PERSON
-  INCORRECT_DETAILS
-  FRAUD
-  OTHER
-}
-
-enum DisputeStatus {
-  PENDING
-  IN_REVIEW
-  RESOLVED
-  REJECTED
 }
 
 enum DocumentStatus {
@@ -203,29 +130,9 @@ enum DocumentStatus {
   ARCHIVED
 }
 
-enum KioskStatus {
-  PENDING
-  ACTIVE
-  SUSPENDED
-}
-
-enum NotificationChannel {
-  EMAIL
-  SMS
-}
-
-enum NotificationType {
-  CLAIM
-  UPLOAD
-  KIOSK_ACK
-  KIOSK_DISPATCH
-  REMINDER
-  DISPUTE
-  DOCUMENT_FOUND
-}
-
 enum UserStatus {
   PENDING
   ACTIVE
   SUSPENDED
+  DELETED
 }

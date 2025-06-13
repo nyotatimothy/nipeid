@@ -26,12 +26,13 @@ export async function POST(req: NextRequest) {
     // Create contact request
     const contactRequest = await prisma.contactRequest.create({
       data: {
-        fullName: data.fullName,
+        documentNumber: data.documentNumber,
+        documentType: data.documentType === 'other' ? 'OTHER' : data.documentType.toUpperCase().replace('-', '_'),
+        firstName: data.fullName.split(' ')[0],
+        lastName: data.fullName.split(' ').slice(1).join(' '),
         email: data.email,
         phone: data.phone,
-        documentType: data.documentType === 'other' ? 'OTHER' : data.documentType.toUpperCase().replace('-', '_'),
-        documentNumber: data.documentNumber,
-        namesOnDocument: data.namesOnDocument || null,
+        message: `Names on document: ${data.namesOnDocument || 'Not provided'}`,
       },
     });
     console.log('Contact request created:', contactRequest); // Debug log
