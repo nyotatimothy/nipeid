@@ -1,0 +1,18 @@
+-- AlterTable
+ALTER TABLE "Kiosk" ADD COLUMN     "accessInfo" TEXT,
+ADD COLUMN     "address" TEXT,
+ADD COLUMN     "city" TEXT,
+ADD COLUMN     "county" TEXT,
+ADD COLUMN     "description" TEXT,
+ADD COLUMN     "fridayHours" TEXT,
+ADD COLUMN     "landmarks" TEXT,
+ADD COLUMN     "latitude" DOUBLE PRECISION,
+ADD COLUMN     "longitude" DOUBLE PRECISION,
+ADD COLUMN     "mondayHours" TEXT,
+ADD COLUMN     "parkingInfo" TEXT,
+ADD COLUMN     "postalCode" TEXT,
+ADD COLUMN     "saturdayHours" TEXT,
+ADD COLUMN     "sundayHours" TEXT,
+ADD COLUMN     "thursdayHours" TEXT,
+ADD COLUMN     "tuesdayHours" TEXT,
+ADD COLUMN     "wednesdayHours" TEXT;

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Elements -->
+  <circle cx="400" cy="300" r="250" fill="#E3F2FD" opacity="0.5"/>
+  <circle cx="400" cy="300" r="200" fill="#BBDEFB" opacity="0.3"/>
+  
+  <!-- Main ID Card -->
+  <g transform="translate(250, 150) rotate(-10)">
+    <rect x="0" y="0" width="300" height="200" rx="15" fill="#FFFFFF" filter="url(#shadow)"/>
+    <rect x="20" y="20" width="80" height="80" rx="5" fill="#1976D2"/>
+    <rect x="120" y="30" width="150" height="15" rx="2" fill="#90CAF9"/>
+    <rect x="120" y="60" width="100" height="15" rx="2" fill="#90CAF9"/>
+    <rect x="20" y="120" width="260" height="20" rx="2" fill="#E3F2FD"/>
+    <rect x="20" y="150" width="200" height="20" rx="2" fill="#E3F2FD"/>
+  </g>
+  
+  <!-- Search Elements -->
+  <g transform="translate(450, 250) rotate(10)">
+    <circle cx="50" cy="50" r="40" stroke="#1976D2" stroke-width="8" fill="none"/>
+    <line x1="80" y1="80" x2="120" y2="120" stroke="#1976D2" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Shield/Security Icon -->
+  <g transform="translate(200, 350)">
+    <path d="M50,0 L100,20 L100,60 C100,90 80,110 50,130 C20,110 0,90 0,60 L0,20 Z" fill="#2196F3" opacity="0.8"/>
+    <path d="M45,40 L65,60 L85,30" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  
+  <!-- Floating Elements -->
+  <g transform="translate(500, 150)">
+    <rect x="0" y="0" width="100" height="60" rx="5" fill="#90CAF9" opacity="0.6"/>
+    <rect x="10" y="10" width="80" height="10" rx="2" fill="#1976D2"/>
+    <rect x="10" y="30" width="60" height="10" rx="2" fill="#1976D2"/>
+  </g>
+  
+  <g transform="translate(150, 200)">
+    <rect x="0" y="0" width="80" height="50" rx="5" fill="#90CAF9" opacity="0.4"/>
+    <rect x="10" y="10" width="60" height="8" rx="2" fill="#1976D2"/>
+    <rect x="10" y="25" width="40" height="8" rx="2" fill="#1976D2"/>
+  </g>
+  
+  <!-- Abstract Shapes -->
+  <circle cx="600" cy="400" r="15" fill="#1976D2" opacity="0.3"/>
+  <circle cx="200" cy="150" r="10" fill="#1976D2" opacity="0.3"/>
+  <circle cx="650" cy="200" r="12" fill="#1976D2" opacity="0.3"/>
+  
+  <!-- Filters -->
+  <defs>
+    <filter id="shadow" x="-20" y="-20" width="340" height="240">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+</svg> 
