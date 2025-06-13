@@ -3,7 +3,12 @@ import { PrismaClient } from '@prisma/client';
 import { Resend } from 'resend';
 
 const prisma = new PrismaClient();
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+
+// Initialize Resend only if API key is available
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,34 +26,19 @@ export async function POST(req: NextRequest) {
     // Create contact request
     const contactRequest = await prisma.contactRequest.create({
       data: {
-        name: data.fullName,
+        fullName: data.fullName,
         email: data.email,
         phone: data.phone,
         documentType: data.documentType === 'other' ? 'OTHER' : data.documentType.toUpperCase().replace('-', '_'),
         documentNumber: data.documentNumber,
-        firstName: data.namesOnDocument?.split(' ')[0] || null,
-        lastName: data.namesOnDocument?.split(' ').slice(1).join(' ') || null,
-        searchQuery: `${data.documentType} ${data.documentNumber}`,
+        namesOnDocument: data.namesOnDocument || null,
       },
     });
     console.log('Contact request created:', contactRequest); // Debug log
 
-    // Create notification
-    if (data.email) {
+    // Send email only if email is provided and Resend is initialized
+    if (data.email && resend) {
       try {
-        const notification = await prisma.notification.create({
-          data: {
-            type: 'DOCUMENT_FOUND',
-            channel: 'EMAIL',
-            message: `Thank you for reporting your lost ${data.documentType}. We will notify you if we find it.`,
-            sent: false,
-            // Add required relations
-            userId: null, // Since this is a public submission
-            documentId: null, // No document found yet
-          },
-        });
-        console.log('Notification created:', notification); // Debug log
-
         // Send immediate email confirmation
         const emailResult = await resend.emails.send({
           from: 'MyID <noreply@myid.com>',
@@ -70,7 +60,7 @@ export async function POST(req: NextRequest) {
         });
         console.log('Email sent:', emailResult); // Debug log
       } catch (emailError) {
-        console.error('Email/notification error:', emailError);
+        console.error('Email error:', emailError);
         // Continue execution even if email fails
       }
     }
