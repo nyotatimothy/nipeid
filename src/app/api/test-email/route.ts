@@ -12,6 +12,15 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
+    // Check if email configuration is available
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('Email configuration is missing');
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Email service is not configured.' 
+      }, { status: 503 });
+    }
+
     // Test document details
     const testDocumentDetails = {
       firstName: 'John',

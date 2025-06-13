@@ -1,42 +1,94 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
+import { maskName, maskDocNumber } from '@/lib/masking';
+import Fuse from 'fuse.js';
 
 const prisma = new PrismaClient();
 
-function maskName(name: string) {
-  if (!name) return '';
-  return name.slice(0, 2) + '*'.repeat(Math.max(0, name.length - 2));
-}
-
-function maskDocNumber(doc: string) {
-  if (!doc) return '';
-  if (doc.length <= 4) return doc[0] + '*'.repeat(doc.length - 2) + doc.slice(-1);
-  return doc.slice(0, 2) + '*'.repeat(doc.length - 4) + doc.slice(-2);
-}
-
 export async function POST(req: Request) {
-  const { query } = await req.json();
-  if (!query || typeof query !== 'string' || query.length < 2) {
+  const body = await req.json();
+  
+  // Handle both single query and multi-field search
+  const { query, name, documentNumber, documentType } = body;
+  
+  // If single query is provided, use fuzzy search
+  if (query && typeof query === 'string') {
+    const docs = await prisma.document.findMany({
+      take: 50, // Increased limit for fuzzy search
+    });
+
+    // Configure Fuse.js for fuzzy searching
+    const fuseOptions = {
+      keys: ['firstName', 'middleName', 'lastName', 'documentNumber'],
+      threshold: 0.4, // Lower = more strict matching
+      minMatchCharLength: 2, // Minimum of 2 characters to match
+    };
+
+    const fuse = new Fuse(docs, fuseOptions);
+    const searchResults = fuse.search(query);
+
+    // Map the results
+    const results = searchResults.slice(0, 10).map(({ item: doc }) => mapDocumentToResult(doc));
+    return NextResponse.json({ results });
+  }
+  
+  // Multi-field search
+  const searchConditions: Prisma.DocumentWhereInput[] = [];
+  
+  if (name) {
+    // Split the name into parts and search across all name fields
+    const nameParts = name.trim().split(/\s+/);
+    searchConditions.push({
+      OR: [
+        { firstName: { contains: name, mode: 'insensitive' } },
+        { middleName: { contains: name, mode: 'insensitive' } },
+        { lastName: { contains: name, mode: 'insensitive' } },
+        // Also search for exact matches of name parts
+        ...nameParts.map((part: string) => ({
+          OR: [
+            { firstName: { equals: part, mode: 'insensitive' } },
+            { middleName: { equals: part, mode: 'insensitive' } },
+            { lastName: { equals: part, mode: 'insensitive' } }
+          ]
+        }))
+      ]
+    });
+  }
+
+  if (documentNumber) {
+    searchConditions.push({
+      documentNumber: { contains: documentNumber, mode: 'insensitive' }
+    });
+  }
+
+  if (documentType) {
+    searchConditions.push({
+      documentType: documentType
+    });
+  }
+
+  // If no search parameters provided, return empty results
+  if (searchConditions.length === 0) {
     return NextResponse.json({ results: [] });
   }
 
   // Search by name or document number (case-insensitive, partial match)
   const docs = await prisma.document.findMany({
     where: {
-      OR: [
-        { firstName: { contains: query, mode: 'insensitive' } },
-        { middleName: { contains: query, mode: 'insensitive' } },
-        { lastName: { contains: query, mode: 'insensitive' } },
-        { documentNumber: { contains: query, mode: 'insensitive' } },
-      ],
+      AND: searchConditions
     },
     take: 10,
   });
 
-  const results = docs.map((doc: any) => ({
+  const results = docs.map(mapDocumentToResult);
+  return NextResponse.json({ results });
+}
+
+function mapDocumentToResult(doc: any) {
+  return {
     name: `${maskName(doc.firstName)} ${maskName(doc.middleName || '')} ${maskName(doc.lastName)}`.trim(),
     docNumber: maskDocNumber(doc.documentNumber),
-    type: 'ID Card', // You can expand this if you add more types
+    type: doc.documentType || 'NATIONAL_ID',
     status: doc.status,
     // Include full document data for successful claims (will be revealed after payment)
     fullData: {
@@ -55,7 +107,5 @@ export async function POST(req: Request) {
       status: doc.status,
       createdAt: doc.createdAt
     }
-  }));
-
-  return NextResponse.json({ results });
+  };
 } 

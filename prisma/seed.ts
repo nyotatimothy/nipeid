@@ -1,133 +1,116 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role, DocumentType, Condition, DocumentStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database...');
+  // Create admin user
+  const hashedPassword = await bcrypt.hash('admin@nipeid.com', 10);
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@nipeid.com' },
+    update: {},
+    create: {
+      email: 'admin@nipeid.com',
+      name: 'System Admin',
+      password: hashedPassword,
+      role: Role.ADMIN,
+      status: 'ACTIVE'
+    },
+  });
 
-  // Create test users for all roles
-  const testUsers = [
-    {
-      name: 'Admin User',
-      email: 'admin@myid.com',
-      password: 'admin123',
-      role: 'ADMIN',
+  // Create a test kiosk
+  const kiosk = await prisma.kiosk.upsert({
+    where: { name: 'Central Kiosk' },
+    update: {},
+    create: {
+      name: 'Central Kiosk',
+      location: 'Nairobi CBD',
+      phone: '+254700000000',
+      email: 'central@nipeid.com',
       status: 'ACTIVE',
+      address: 'Moi Avenue',
+      city: 'Nairobi',
+      county: 'Nairobi',
+      latitude: -1.2921,
+      longitude: 36.8219,
+    },
+  });
+
+  // Create a test poster user
+  const poster = await prisma.user.upsert({
+    where: { email: 'poster@nipeid.com' },
+    update: {},
+    create: {
+      email: 'poster@nipeid.com',
+      name: 'Test Poster',
+      password: await bcrypt.hash('poster@123', 10),
+      role: Role.POSTER,
+      status: 'ACTIVE'
+    },
+  });
+
+  // Create test documents
+  const documents = [
+    {
+      firstName: 'John',
+      lastName: 'Doe',
+      dateOfBirth: new Date('1990-01-01'),
+      documentNumber: 'ID123456',
+      documentType: DocumentType.NATIONAL_ID,
+      foundLocation: 'Bus Station',
+      foundDistrict: 'Central',
+      foundDivision: 'CBD',
+      foundSubLocation: 'Bus Terminal',
+      dateFound: new Date('2024-03-01'),
+      condition: Condition.GOOD,
+      status: DocumentStatus.UPLOADED,
     },
     {
-      name: 'John Poster',
-      email: 'poster@myid.com',
-      password: 'poster123',
-      role: 'POSTER',
-      status: 'ACTIVE',
+      firstName: 'Jane',
+      lastName: 'Smith',
+      dateOfBirth: new Date('1985-05-15'),
+      documentNumber: 'PP789012',
+      documentType: DocumentType.PASSPORT,
+      foundLocation: 'Shopping Mall',
+      foundDistrict: 'Westlands',
+      foundDivision: 'Mall Area',
+      foundSubLocation: 'Food Court',
+      dateFound: new Date('2024-03-05'),
+      condition: Condition.MEDIUM,
+      status: DocumentStatus.KIOSK_CONFIRMED,
     },
     {
-      name: 'Jane User',
-      email: 'user@myid.com',
-      password: 'user123',
-      role: 'USER',
-      status: 'ACTIVE',
-    },
-    {
-      name: 'Kiosk Manager',
-      email: 'kiosk@myid.com',
-      password: 'kiosk123',
-      role: 'KIOSK_MANAGER',
-      status: 'ACTIVE',
+      firstName: 'Michael',
+      lastName: 'Johnson',
+      dateOfBirth: new Date('1995-08-20'),
+      documentNumber: 'DL345678',
+      documentType: DocumentType.DRIVING_LICENSE,
+      foundLocation: 'Parking Lot',
+      foundDistrict: 'Karen',
+      foundDivision: 'Shopping Center',
+      foundSubLocation: 'Basement Parking',
+      dateFound: new Date('2024-03-10'),
+      condition: Condition.GOOD,
+      status: DocumentStatus.UPLOADED,
     },
   ];
 
-  let kioskManagerId: string | null = null;
-
-  for (const userData of testUsers) {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    
-    const existingUser = await prisma.user.findUnique({
-      where: { email: userData.email }
-    });
-
-    if (!existingUser) {
-      const user = await prisma.user.create({
-        data: {
-          name: userData.name,
-          email: userData.email,
-          password: hashedPassword,
-          role: userData.role as any,
-          status: userData.status as any,
-        },
-      });
-      console.log(`✅ Created ${userData.role} user: ${userData.email}`);
-      
-      // Store kiosk manager ID for linking
-      if (userData.role === 'KIOSK_MANAGER') {
-        kioskManagerId = user.id;
-      }
-    } else {
-      console.log(`⚠️ User already exists: ${userData.email}`);
-      
-      // Get existing kiosk manager ID
-      if (userData.role === 'KIOSK_MANAGER') {
-        kioskManagerId = existingUser.id;
-      }
-    }
-  }
-
-  // Create a test kiosk for the kiosk manager
-  const existingKiosk = await prisma.kiosk.findFirst({
-    where: { 
-      OR: [
-        { name: 'Test Kiosk CBD' }
-      ]
-    },
-    include: { managers: true }
-  });
-
-  if (!existingKiosk) {
-    await prisma.kiosk.create({
+  for (const doc of documents) {
+    await prisma.document.create({
       data: {
-        name: 'Test Kiosk CBD',
-        location: 'Nairobi CBD',
-        contactPerson: 'Kiosk Manager',
-        phone: '+254700000001',
-        email: 'kiosk@myid.com',
-        status: 'ACTIVE',
-        managers: {
-          connect: kioskManagerId ? { id: kioskManagerId } : undefined
-        }
+        ...doc,
+        kioskId: kiosk.id,
+        posterId: poster.id,
       },
     });
-    console.log('✅ Created test kiosk');
-  } else {
-    console.log('⚠️ Test kiosk already exists');
-    
-    // Check if kiosk manager is connected, if not connect them
-    const isManagerConnected = existingKiosk.managers.some(manager => manager.id === kioskManagerId);
-    
-    if (!isManagerConnected && kioskManagerId) {
-      await prisma.kiosk.update({
-        where: { id: existingKiosk.id },
-        data: {
-          managers: {
-            connect: { id: kioskManagerId }
-          }
-        }
-      });
-      console.log('✅ Connected kiosk manager to existing kiosk');
-    }
   }
 
-  console.log('🎉 Seeding completed!');
-  console.log('\n📋 Test Credentials:');
-  console.log('Admin: admin@myid.com / admin123');
-  console.log('Poster: poster@myid.com / poster123');
-  console.log('User: user@myid.com / user123');
-  console.log('Kiosk: kiosk@myid.com / kiosk123');
+  console.log('Seed data created successfully');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seeding failed:', e);
+    console.error(e);
     process.exit(1);
   })
   .finally(async () => {

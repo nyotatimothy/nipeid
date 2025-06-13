@@ -38,6 +38,20 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import ArchiveIcon from '@mui/icons-material/Archive';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
+// New icons for header and dashboard
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import SecurityIcon from '@mui/icons-material/Security';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import Image from 'next/image';
 
 const statusLabels: Record<string, string> = {
   UPLOADED: 'Uploaded',
@@ -375,41 +389,260 @@ export default function KioskDashboardPage() {
   );
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* AppBar/Header */}
-      <AppBar position="static" color="transparent" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar src="/myID.png" alt="MyID Logo" sx={{ width: 72, height: 72, bgcolor: 'white', boxShadow: 3 }} />
-            <Button href="/" component={Link} variant="text" color="primary" sx={{ minWidth: 0, p: 0, mr: 1, fontWeight: 700 }}>
-              Home
-            </Button>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#f8fafc' }}>
+      {/* Professional Header */}
+      <AppBar position="static" elevation={0} sx={{ bgcolor: 'white', borderBottom: '1px solid #e2e8f0' }}>
+        <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+          {/* Left side - Logo and Navigation */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {/* Logo */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
+              <Image 
+                src="/nipeID.png" 
+                alt="Nipe ID Logo" 
+                width={80} 
+                height={80}
+                style={{ objectFit: 'contain' }}
+              />
+              <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b' }}>
+                Nipe ID
+              </Typography>
+            </Box>
+
+            {/* Navigation Buttons */}
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button 
+                href="/kiosk" 
+                component={Link} 
+                variant="text" 
+                sx={{ 
+                  color: '#059669', 
+                  fontWeight: 600,
+                  bgcolor: '#ecfdf5',
+                  '&:hover': { bgcolor: '#d1fae5' }
+                }}
+              >
+                DASHBOARD
+              </Button>
+            </Box>
           </Box>
-          {session && (
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={() => signOut()}
-              aria-label="Sign out"
-            >
-              Sign out
-            </Button>
-          )}
+
+          {/* Right side - User Profile and Actions */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {/* Notification and Settings Icons */}
+            <IconButton sx={{ color: '#64748b' }}>
+              <NotificationsIcon />
+            </IconButton>
+            <IconButton sx={{ color: '#64748b' }}>
+              <SettingsIcon />
+            </IconButton>
+
+            {/* User Profile Section */}
+            {session && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 2 }}>
+                <Box sx={{ textAlign: 'right' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#1e293b' }}>
+                    {(session.user as any)?.name || 'Kiosk Manager'}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#64748b' }}>
+                    Kiosk Manager
+                  </Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: '#059669', width: 40, height: 40 }}>
+                  {((session.user as any)?.name || 'K').charAt(0).toUpperCase()}
+                </Avatar>
+                <Button 
+                  variant="outlined" 
+                  size="small"
+                  onClick={() => signOut()}
+                  sx={{ 
+                    borderColor: '#e2e8f0',
+                    color: '#64748b',
+                    '&:hover': { borderColor: '#cbd5e1', bgcolor: '#f0fdf4' }
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </Box>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Hero Section */}
-      <Box sx={{ textAlign: 'center', mt: 6, mb: 4 }}>
-        <Typography variant="h4" fontWeight={800} color="primary.main" gutterBottom>
-          Kiosk Manager Dashboard
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Manage document receipts and dispatches for {kioskInfo?.name || 'your kiosk location'}.
-        </Typography>
-      </Box>
+      {/* Dashboard Header */}
+      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+            Kiosk Manager Dashboard
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#64748b' }}>
+            Manage document receipts and dispatches for {kioskInfo?.name || 'your kiosk location'}
+          </Typography>
+        </Box>
 
-      {/* Success/Error Alerts */}
-      <Box sx={{ maxWidth: 1200, mx: 'auto', px: 2, mb: 2 }}>
+        {/* Dashboard Metrics Cards */}
+        <Box sx={{ 
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: '1fr 1fr 1fr 1fr' },
+          gap: 3,
+          mb: 4
+        }}>
+          {/* Total Documents Card */}
+          <Card elevation={2} sx={{ 
+            p: 3, 
+            borderRadius: 3,
+            transition: 'all 0.3s ease',
+            '&:hover': { 
+              transform: 'translateY(-4px)', 
+              boxShadow: '0 8px 25px rgba(0,0,0,0.15)' 
+            }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+                  {docs.length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
+                  Total Documents
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                  <TrendingUpIcon sx={{ fontSize: 16, color: '#10b981', mr: 0.5 }} />
+                  <Typography variant="caption" sx={{ color: '#10b981', fontWeight: 600 }}>
+                    +8% this week
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ 
+                p: 2, 
+                borderRadius: 2, 
+                bgcolor: '#ecfdf5',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <DescriptionIcon sx={{ fontSize: 32, color: '#059669' }} />
+              </Box>
+            </Box>
+          </Card>
+
+          {/* Pending Acknowledgment Card */}
+          <Card elevation={2} sx={{ 
+            p: 3, 
+            borderRadius: 3,
+            transition: 'all 0.3s ease',
+            '&:hover': { 
+              transform: 'translateY(-4px)', 
+              boxShadow: '0 8px 25px rgba(0,0,0,0.15)' 
+            }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+                  {docs.filter(d => d.status === 'UPLOADED' || d.status === 'AWAITING_KIOSK_ACK').length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
+                  Pending Receipt
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                  <Typography variant="caption" sx={{ color: '#f59e0b', fontWeight: 600 }}>
+                    Requires attention
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ 
+                p: 2, 
+                borderRadius: 2, 
+                bgcolor: '#fef3c7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <PendingActionsIcon sx={{ fontSize: 32, color: '#f59e0b' }} />
+              </Box>
+            </Box>
+          </Card>
+
+          {/* In Kiosk Card */}
+          <Card elevation={2} sx={{ 
+            p: 3, 
+            borderRadius: 3,
+            transition: 'all 0.3s ease',
+            '&:hover': { 
+              transform: 'translateY(-4px)', 
+              boxShadow: '0 8px 25px rgba(0,0,0,0.15)' 
+            }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+                  {docs.filter(d => d.status === 'KIOSK_CONFIRMED').length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
+                  In Kiosk
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                  <TrendingUpIcon sx={{ fontSize: 16, color: '#10b981', mr: 0.5 }} />
+                  <Typography variant="caption" sx={{ color: '#10b981', fontWeight: 600 }}>
+                    +12% this month
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ 
+                p: 2, 
+                borderRadius: 2, 
+                bgcolor: '#dcfce7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <CheckCircleIcon sx={{ fontSize: 32, color: '#16a34a' }} />
+              </Box>
+            </Box>
+          </Card>
+
+          {/* Dispatched Card */}
+          <Card elevation={2} sx={{ 
+            p: 3, 
+            borderRadius: 3,
+            transition: 'all 0.3s ease',
+            '&:hover': { 
+              transform: 'translateY(-4px)', 
+              boxShadow: '0 8px 25px rgba(0,0,0,0.15)' 
+            }
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+                  {docs.filter(d => d.status === 'DISPATCHED').length}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
+                  Dispatched
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                  <TrendingUpIcon sx={{ fontSize: 16, color: '#10b981', mr: 0.5 }} />
+                  <Typography variant="caption" sx={{ color: '#10b981', fontWeight: 600 }}>
+                    +15% this week
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ 
+                p: 2, 
+                borderRadius: 2, 
+                bgcolor: '#f3e8ff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <LocalShippingIcon sx={{ fontSize: 32, color: '#9333ea' }} />
+              </Box>
+            </Box>
+          </Card>
+        </Box>
+      </Container>
+
+      {/* Main Content */}
+      <Container maxWidth="xl" sx={{ mb: 4 }}>
+        {/* Success/Error Alerts */}
         {success && (
           <Alert severity="success" sx={{ mb: 2 }}>
             Action completed successfully!
@@ -420,10 +653,7 @@ export default function KioskDashboardPage() {
             {error}
           </Alert>
         )}
-      </Box>
 
-      {/* Main Content */}
-      <Box sx={{ maxWidth: 1200, mx: 'auto', px: 2 }}>
         <Card elevation={3} sx={{ borderRadius: 4 }}>
           <CardContent>
             {/* Tabs and Search */}
@@ -553,7 +783,7 @@ export default function KioskDashboardPage() {
             />
           </CardContent>
         </Card>
-      </Box>
+      </Container>
 
       {/* View Document Dialog */}
       <Dialog open={!!viewDoc} onClose={() => setViewDoc(null)} maxWidth="md" fullWidth>
@@ -1167,9 +1397,174 @@ export default function KioskDashboardPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Links Footer */}
-      <Box sx={{ textAlign: 'center', py: 3, color: 'text.secondary' }}>
-        <Link href="/about">About</Link> | <Link href="/privacy">Privacy</Link> | <Link href="/terms">Terms</Link>
+      {/* Comprehensive Footer */}
+      {/* Statistics Bar */}
+      <Box sx={{ 
+        bgcolor: '#059669', 
+        color: 'white', 
+        py: 4,
+        textAlign: 'center'
+      }}>
+        <Container maxWidth="lg">
+          <Box sx={{ 
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' },
+            gap: 4
+          }}>
+            <Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                {docs.length}+
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 500 }}>
+                Documents Processed
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                98%
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 500 }}>
+                Success Rate
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 1 }}>
+                24/7
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 500 }}>
+                Service Available
+              </Typography>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Main Footer */}
+      <Box sx={{ bgcolor: '#1e293b', color: 'white', py: 6 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ 
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
+            gap: 4
+          }}>
+            {/* MyID Column */}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                Nipe ID
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#94a3b8', mb: 3, lineHeight: 1.6 }}>
+                Secure document recovery service connecting finders with owners through our nationwide kiosk network.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ 
+                  p: 1, 
+                  borderRadius: '50%', 
+                  bgcolor: '#334155',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <SecurityIcon sx={{ fontSize: 20 }} />
+                </Box>
+                <Box sx={{ 
+                  p: 1, 
+                  borderRadius: '50%', 
+                  bgcolor: '#334155',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <LocationOnIcon sx={{ fontSize: 20 }} />
+                </Box>
+                <Box sx={{ 
+                  p: 1, 
+                  borderRadius: '50%', 
+                  bgcolor: '#334155',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <ContactSupportIcon sx={{ fontSize: 20 }} />
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Services Column */}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                Services
+              </Typography>
+              <Stack spacing={1}>
+                <Link href="/" sx={{ color: '#94a3b8', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                  Document Search
+                </Link>
+                <Link href="/claim" sx={{ color: '#94a3b8', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                  Claim Documents
+                </Link>
+                <Link href="/locations" sx={{ color: '#94a3b8', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                  Kiosk Locations
+                </Link>
+                <Link href="/track" sx={{ color: '#94a3b8', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                  Track Status
+                </Link>
+              </Stack>
+            </Box>
+
+            {/* Company Column */}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                Company
+              </Typography>
+              <Stack spacing={1}>
+                <Link href="/about" sx={{ color: '#94a3b8', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                  About Us
+                </Link>
+                <Link href="/privacy" sx={{ color: '#94a3b8', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                  Privacy Policy
+                </Link>
+                <Link href="/terms" sx={{ color: '#94a3b8', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                  Terms of Service
+                </Link>
+                <Link href="/contact" sx={{ color: '#94a3b8', textDecoration: 'none', '&:hover': { color: 'white' } }}>
+                  Contact Us
+                </Link>
+              </Stack>
+            </Box>
+
+            {/* Connect Column */}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                Connect
+              </Typography>
+              <Stack spacing={2}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CheckCircleIcon sx={{ fontSize: 20, color: '#10b981' }} />
+                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+                    Certified
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <SecurityIcon sx={{ fontSize: 20, color: '#10b981' }} />
+                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+                    Secure
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ContactSupportIcon sx={{ fontSize: 20, color: '#10b981' }} />
+                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+                    Trusted
+                  </Typography>
+                </Box>
+              </Stack>
+            </Box>
+          </Box>
+
+          {/* Copyright */}
+          <Divider sx={{ my: 4, borderColor: '#334155' }} />
+          <Typography variant="body2" sx={{ textAlign: 'center', color: '#94a3b8' }}>
+            © 2025 Nipe ID. All rights reserved.
+          </Typography>
+        </Container>
       </Box>
     </Box>
   );
