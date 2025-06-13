@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,72 +7,213 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                                  String                  @id @default(cuid())
+  name                                String?
+  email                               String?                 @unique
+  emailVerified                       DateTime?
+  image                               String?
+  phone                               String?
+  role                                Role                    @default(USER)
+  createdAt                           DateTime                @default(now())
+  updatedAt                           DateTime                @updatedAt
+  password                            String?
+  status                              UserStatus              @default(PENDING)
+  provider                            String?
+  providerId                          String?
+  Dispute                             Dispute[]
+  Document_Document_claimedByIdToUser Document[]              @relation("Document_claimedByIdToUser")
+  Document_Document_posterIdToUser    Document[]              @relation("Document_posterIdToUser")
+  DocumentStatusHistory               DocumentStatusHistory[]
+  Notification                        Notification[]
+  Kiosk                               Kiosk[]                 @relation("KioskManagers")
+
+  @@index([provider, providerId])
+}
+
+model Document {
+  id                              String                  @id @default(cuid())
+  firstName                       String
+  middleName                      String?
+  lastName                        String
+  dateOfBirth                     DateTime
+  documentNumber                  String
+  foundLocation                   String
+  foundDistrict                   String
+  foundDivision                   String
+  foundSubLocation                String
+  dateFound                       DateTime
+  condition                       Condition
+  kioskId                         String
+  posterId                        String
+  claimedById                     String?
+  status                          DocumentStatus          @default(UPLOADED)
+  createdAt                       DateTime                @default(now())
+  updatedAt                       DateTime                @updatedAt
+  expiredAt                       DateTime?
+  documentType                    DocumentType
+  Dispute                         Dispute[]
+  User_Document_claimedByIdToUser User?                   @relation("Document_claimedByIdToUser", fields: [claimedById], references: [id])
+  Kiosk                           Kiosk                   @relation(fields: [kioskId], references: [id])
+  User_Document_posterIdToUser    User                    @relation("Document_posterIdToUser", fields: [posterId], references: [id])
+  DocumentStatusHistory           DocumentStatusHistory[]
+  Notification                    Notification[]
+}
+
+model ContactRequest {
+  id             String        @id @default(cuid())
+  name           String
+  email          String
+  phone          String?
+  documentNumber String?
+  firstName      String?
+  lastName       String?
+  dateOfBirth    DateTime?
+  searchQuery    String?
+  notified       Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  documentType   DocumentType?
+}
+
+model Kiosk {
+  id             String      @id @default(cuid())
+  name           String      @unique
+  location       String
+  phone          String
+  hours          String?
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  contactPerson  String?
+  email          String?     @unique
+  password       String?
+  status         KioskStatus @default(PENDING)
+  accessInfo     String?
+  address        String?
+  city           String?
+  county         String?
+  description    String?
+  fridayHours    String?
+  landmarks      String?
+  latitude       Float?
+  longitude      Float?
+  mondayHours    String?
+  parkingInfo    String?
+  postalCode     String?
+  saturdayHours  String?
+  sundayHours    String?
+  thursdayHours  String?
+  tuesdayHours   String?
+  wednesdayHours String?
+  Document       Document[]
+  User           User[]      @relation("KioskManagers")
+}
+
+model Dispute {
+  id          String          @id
+  userId      String
+  documentId  String
+  category    DisputeCategory
+  explanation String?
+  status      DisputeStatus   @default(PENDING)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime
+  Document    Document        @relation(fields: [documentId], references: [id])
+  User        User            @relation(fields: [userId], references: [id])
+}
+
+model DocumentStatusHistory {
+  id          String         @id
+  documentId  String
+  status      DocumentStatus
+  changedById String?
+  createdAt   DateTime       @default(now())
+  User        User?          @relation(fields: [changedById], references: [id])
+  Document    Document       @relation(fields: [documentId], references: [id])
+}
+
+model Notification {
+  id         String              @id
+  userId     String?
+  documentId String?
+  type       NotificationType
+  channel    NotificationChannel
+  message    String
+  sent       Boolean             @default(false)
+  createdAt  DateTime            @default(now())
+  Document   Document?           @relation(fields: [documentId], references: [id])
+  User       User?               @relation(fields: [userId], references: [id])
+}
+
 enum Role {
+  VISITOR
   USER
-  ADMIN
-  KIOSK_MANAGER
   POSTER
+  KIOSK_MANAGER
+  ADMIN
 }
 
 enum DocumentType {
   NATIONAL_ID
   PASSPORT
-  DRIVING_LICENSE
   BIRTH_CERTIFICATE
-  ACADEMIC_CERTIFICATE
+  DRIVING_LICENSE
   OTHER
 }
 
-enum TicketStatus {
-  OPEN
-  IN_PROGRESS
-  CLOSED
+enum Condition {
+  GOOD
+  MEDIUM
+  BAD
+}
+
+enum DisputeCategory {
+  WRONG_PERSON
+  INCORRECT_DETAILS
+  FRAUD
+  OTHER
+}
+
+enum DisputeStatus {
+  PENDING
+  IN_REVIEW
   RESOLVED
+  REJECTED
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+enum DocumentStatus {
+  UPLOADED
+  AWAITING_KIOSK_ACK
+  KIOSK_CONFIRMED
+  CLAIMED
+  DISPATCHED
+  ARCHIVED
 }
 
-model Document {
-  id              String       @id @default(cuid())
-  documentNumber  String
-  documentType    DocumentType
-  namesOnDocument String
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-
-  @@unique([documentNumber, documentType])
+enum KioskStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
 }
 
-model ContactRequest {
-  id              String       @id @default(cuid())
-  fullName        String
-  phone           String
-  email           String?
-  documentNumber  String
-  documentType    DocumentType
-  namesOnDocument String?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+enum NotificationChannel {
+  EMAIL
+  SMS
 }
 
-model SupportTicket {
-  id              Int          @id @default(autoincrement())
-  name            String
-  email           String?
-  phone           String
-  subject         String
-  message         String       @db.Text
-  referenceNumber String?
-  status          TicketStatus @default(OPEN)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+enum NotificationType {
+  CLAIM
+  UPLOAD
+  KIOSK_ACK
+  KIOSK_DISPATCH
+  REMINDER
+  DISPUTE
+  DOCUMENT_FOUND
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
 }
