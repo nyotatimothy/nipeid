@@ -6,15 +6,11 @@ import {
   Info as InfoIcon,
   Login as LoginIcon
 } from '@mui/icons-material';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 export default function MobileNavigation() {
-  const router = useRouter();
   const pathname = usePathname();
-
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    router.push(newValue);
-  };
 
   return (
     <Paper 
@@ -24,13 +20,12 @@ export default function MobileNavigation() {
         left: 0, 
         right: 0,
         display: { xs: 'block', sm: 'none' },
-        zIndex: 1000
+        zIndex: 1100
       }} 
       elevation={3}
     >
       <BottomNavigation
         value={pathname}
-        onChange={handleChange}
         showLabels
         sx={{
           bgcolor: 'white',
@@ -49,21 +44,29 @@ export default function MobileNavigation() {
           label="Home" 
           value="/" 
           icon={<HomeIcon />} 
+          component={Link}
+          href="/"
         />
         <BottomNavigationAction 
           label="Contact" 
           value="/contact" 
           icon={<ContactIcon />} 
+          component={Link}
+          href="/contact"
         />
         <BottomNavigationAction 
           label="About" 
           value="/about" 
           icon={<InfoIcon />} 
+          component={Link}
+          href="/about"
         />
         <BottomNavigationAction 
           label="Login" 
           value="/login" 
           icon={<LoginIcon />} 
+          component={Link}
+          href="/login"
         />
       </BottomNavigation>
     </Paper>

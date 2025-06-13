@@ -41,6 +41,9 @@ import {
 import { motion } from 'framer-motion';
 import MobileNavigation from '@/components/MobileNavigation';
 import WebNavigation from '@/components/WebNavigation';
+import { z } from 'zod';
+import { useTranslation } from '@/utils/translations';
+import { en } from '@/locales/en';
 
 const commonQuestions = [
   {
@@ -57,63 +60,92 @@ const commonQuestions = [
   }
 ];
 
+// Form validation schema
+const contactSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name is too long'),
+  email: z.string().email('Invalid email address'),
+  subject: z.string().min(5, 'Subject must be at least 5 characters').max(100, 'Subject is too long'),
+  message: z.string().min(10, 'Message must be at least 10 characters').max(1000, 'Message is too long')
+});
+
+type ContactForm = z.infer<typeof contactSchema>;
+
 export default function ContactPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation();
 
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState<ContactForm>({
     name: '',
     email: '',
-    phone: '',
     subject: '',
-    message: '',
-    referenceNumber: ''
+    message: ''
   });
 
+  const [errors, setErrors] = useState<Partial<ContactForm>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
+  const [submitCount, setSubmitCount] = useState(0);
 
-  const handleFormChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [field]: event.target.value
-    });
+  const validateForm = () => {
+    try {
+      contactSchema.parse(form);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors: Partial<ContactForm> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            newErrors[err.path[0] as keyof ContactForm] = err.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (submitCount >= 5) {
+      setSubmitStatus('error');
+      setErrors({ message: 'Too many attempts. Please try again later.' });
+      return;
+    }
+
+    if (!validateForm()) return;
+
     setIsSubmitting(true);
-    setSubmitError(null);
+    setSubmitStatus(null);
 
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
       });
 
-      const data = await response.json();
+      if (!response.ok) throw new Error('Failed to send message');
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to submit message');
-      }
-
-      setSubmitSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        referenceNumber: ''
-      });
+      setSubmitStatus('success');
+      setForm({ name: '', email: '', subject: '', message: '' });
+      setSubmitCount(prev => prev + 1);
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Failed to submit message');
+      setSubmitStatus('error');
+      setErrors({ message: 'Failed to send message. Please try again.' });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (field: keyof ContactForm) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setForm(prev => ({ ...prev, [field]: e.target.value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -127,18 +159,18 @@ export default function ContactPage() {
       >
         <Container maxWidth="lg" sx={{ py: 6 }}>
           {/* Navigation Header */}
-          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Image 
                   src="/nipeID.png" 
-                  alt="Nipe ID Logo" 
+                  alt={t<string>('common.appName')}
                   width={80} 
                   height={80}
                   style={{ objectFit: 'contain' }}
                 />
                 <Typography variant="h4" sx={{ color: '#059669', fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
-                  Nipe ID
+                  {t<string>('common.appName')}
                 </Typography>
               </Box>
             </Link>
@@ -155,75 +187,74 @@ export default function ContactPage() {
                 transition={{ duration: 0.5 }}
               >
                 <Typography variant="h4" gutterBottom fontWeight="bold" sx={{ color: '#059669' }}>
-                  Contact Support
+                  {t<string>('contact.title')}
                 </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-                  Need help with your lost document report? Our support team is here to assist you.
+                <Typography variant="h6" sx={{ 
+                  color: theme.palette.text.secondary,
+                  mb: 4,
+                  textAlign: 'center',
+                  maxWidth: '800px',
+                  mx: 'auto'
+                }}>
+                  {t<string>('contact.subtitle')}
                 </Typography>
 
                 <Card elevation={3} sx={{ borderRadius: 2 }}>
                   <CardContent sx={{ p: 3 }}>
-                    {submitError && (
-                      <Alert severity="error" sx={{ mb: 3 }}>
-                        {submitError}
+                    {submitStatus === 'success' && (
+                      <Alert severity="success" sx={{ mb: 3 }}>
+                        {t<string>('contact.form.success')}
                       </Alert>
                     )}
-                    {submitSuccess && (
-                      <Alert severity="success" sx={{ mb: 3 }}>
-                        Your message has been sent successfully. We'll get back to you soon.
+                    {submitStatus === 'error' && (
+                      <Alert severity="error" sx={{ mb: 3 }}>
+                        {errors.message || t<string>('contact.form.error')}
+                      </Alert>
+                    )}
+                    {submitCount >= 5 && (
+                      <Alert severity="warning" sx={{ mb: 3 }}>
+                        {t<string>('contact.form.tooManyAttempts')}
                       </Alert>
                     )}
 
                     <form onSubmit={handleSubmit}>
                       <Stack spacing={3}>
-                        <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-                          <TextField
-                            label="Your Name"
-                            value={formData.name}
-                            onChange={handleFormChange('name')}
-                            fullWidth
-                            required
-                          />
-                          <TextField
-                            label="Phone Number"
-                            value={formData.phone}
-                            onChange={handleFormChange('phone')}
-                            fullWidth
-                            required
-                          />
-                        </Box>
-                        
                         <TextField
-                          label="Email Address"
+                          label={t<string>('contact.form.name')}
+                          value={form.name}
+                          onChange={handleChange('name')}
+                          error={!!errors.name}
+                          helperText={errors.name}
+                          fullWidth
+                          required
+                        />
+                        <TextField
+                          label={t<string>('contact.form.email')}
                           type="email"
-                          value={formData.email}
-                          onChange={handleFormChange('email')}
+                          value={form.email}
+                          onChange={handleChange('email')}
+                          error={!!errors.email}
+                          helperText={errors.email}
                           fullWidth
                           required
                         />
-
                         <TextField
-                          label="Reference Number (if available)"
-                          value={formData.referenceNumber}
-                          onChange={handleFormChange('referenceNumber')}
-                          fullWidth
-                          helperText="If you're inquiring about an existing report, please provide your reference number"
-                        />
-
-                        <TextField
-                          label="Subject"
-                          value={formData.subject}
-                          onChange={handleFormChange('subject')}
+                          label={t<string>('contact.form.subject')}
+                          value={form.subject}
+                          onChange={handleChange('subject')}
+                          error={!!errors.subject}
+                          helperText={errors.subject}
                           fullWidth
                           required
                         />
-
                         <TextField
-                          label="Message"
+                          label={t<string>('contact.form.message')}
                           multiline
                           rows={4}
-                          value={formData.message}
-                          onChange={handleFormChange('message')}
+                          value={form.message}
+                          onChange={handleChange('message')}
+                          error={!!errors.message}
+                          helperText={errors.message}
                           fullWidth
                           required
                         />
@@ -240,7 +271,7 @@ export default function ContactPage() {
                             '&:disabled': { bgcolor: '#059669', opacity: 0.7 }
                           }}
                         >
-                          {isSubmitting ? 'Sending...' : 'Send Message'}
+                          {isSubmitting ? t<string>('contact.form.sending') : t<string>('contact.form.submit')}
                         </Button>
                       </Stack>
                     </form>
@@ -261,28 +292,28 @@ export default function ContactPage() {
                 <Card elevation={3} sx={{ borderRadius: 2, mb: 3 }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" gutterBottom sx={{ color: '#059669' }}>
-                      Contact Information
+                      {t<string>('contact.info.title')}
                     </Typography>
                     <Stack spacing={2}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <EmailIcon sx={{ color: '#059669' }} />
-                        <Typography>support@nipeid.com</Typography>
+                        <Typography>{t<string>('contact.info.email')}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <PhoneIcon sx={{ color: '#059669' }} />
-                        <Typography>+254 700 000000</Typography>
+                        <Typography>{t<string>('contact.info.phone')}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <WhatsAppIcon sx={{ color: '#059669' }} />
-                        <Typography>+254 700 000000</Typography>
+                        <Typography>{t<string>('contact.info.whatsapp')}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <LocationIcon sx={{ color: '#059669' }} />
-                        <Typography>Nairobi, Kenya</Typography>
+                        <Typography>{t<string>('contact.info.location')}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <AccessTimeIcon sx={{ color: '#059669' }} />
-                        <Typography>Mon - Fri, 8:00 AM - 5:00 PM</Typography>
+                        <Typography>{t<string>('contact.info.hours')}</Typography>
                       </Box>
                     </Stack>
                   </CardContent>

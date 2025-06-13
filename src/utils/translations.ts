@@ -1,4 +1,4 @@
-import { en } from '../locales/en';
+import { en } from '@/locales/en';
 
 export type TranslationsType = typeof en;
 
@@ -54,19 +54,19 @@ export const i18n = Translations.getInstance();
 // React hook for translations
 import { useState, useEffect } from 'react';
 
+type TranslationKey = keyof typeof en;
+
 export function useTranslation() {
-  const [locale, setLocale] = useState(i18n.getCurrentLocale());
-
-  useEffect(() => {
-    // You can add logic here to handle locale changes
-  }, [locale]);
-
-  return {
-    t: <T = string>(key: string) => i18n.t<T>(key),
-    locale,
-    setLocale: (newLocale: string) => {
-      i18n.setLocale(newLocale);
-      setLocale(newLocale);
-    },
+  // For now, we'll just use English. Later we can add language switching
+  const t = <T>(key: string): T => {
+    return getNestedValue(en, key) as T;
   };
+
+  return { t };
+}
+
+function getNestedValue(obj: any, path: string) {
+  return path.split('.').reduce((current, key) => {
+    return current && current[key] !== 'undefined' ? current[key] : undefined;
+  }, obj);
 } 

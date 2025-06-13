@@ -13,56 +13,70 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
-  Divider,
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
   Email as EmailIcon,
+  Person as PersonIcon,
   Lock as LockIcon,
-  Google as GoogleIcon,
 } from '@mui/icons-material';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import WebNavigation from '@/components/WebNavigation';
 
 // Form validation schema
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
+const signupSchema = z.object({
+  name: z.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name is too long'),
+  email: z.string()
+    .email('Invalid email address')
+    .min(5, 'Email is too short')
+    .max(50, 'Email is too long'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(50, 'Password is too long')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    ),
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
-type LoginForm = z.infer<typeof loginSchema>;
+type SignupForm = z.infer<typeof signupSchema>;
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
-
-  const [form, setForm] = useState<LoginForm>({
+  const [form, setForm] = useState<SignupForm>({
+    name: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
 
-  const [errors, setErrors] = useState<Partial<LoginForm>>({});
+  const [errors, setErrors] = useState<Partial<SignupForm>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateForm = () => {
     try {
-      loginSchema.parse(form);
+      signupSchema.parse(form);
       setErrors({});
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const newErrors: Partial<LoginForm> = {};
+        const newErrors: Partial<SignupForm> = {};
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            newErrors[err.path[0] as keyof LoginForm] = err.message;
+            newErrors[err.path[0] as keyof SignupForm] = err.message;
           }
         });
         setErrors(newErrors);
@@ -76,40 +90,45 @@ export default function LoginPage() {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    setSubmitError(null);
+    setSubmitStatus(null);
 
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email: form.email,
-        password: form.password,
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        }),
       });
 
-      if (result?.error) {
-        setSubmitError('Invalid email or password');
-        return;
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create account');
       }
 
-      router.push(callbackUrl);
+      setSubmitStatus('success');
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
     } catch (error) {
-      setSubmitError('Failed to sign in. Please try again.');
+      setSubmitStatus('error');
+      setErrors({
+        email: error instanceof Error ? error.message : 'Failed to create account',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl });
-  };
-
-  const handleChange = (field: keyof LoginForm) => (
+  const handleChange = (field: keyof SignupForm) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
-    setSubmitError(null);
   };
 
   return (
@@ -135,16 +154,33 @@ export default function LoginPage() {
             <WebNavigation />
           </Box>
 
-          {/* Login Form */}
+          {/* Signup Form */}
           <Container maxWidth="sm">
             <Card elevation={3} sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 4 }}>
                 <Typography variant="h4" sx={{ mb: 4, textAlign: 'center', color: '#059669', fontWeight: 700 }}>
-                  Sign In
+                  Create Account
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
                   <Stack spacing={3}>
+                    <TextField
+                      label="Full Name"
+                      value={form.name}
+                      onChange={handleChange('name')}
+                      error={!!errors.name}
+                      helperText={errors.name}
+                      fullWidth
+                      required
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <PersonIcon sx={{ color: '#059669' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
                     <TextField
                       label="Email Address"
                       type="email"
@@ -191,9 +227,43 @@ export default function LoginPage() {
                       }}
                     />
 
-                    {submitError && (
+                    <TextField
+                      label="Confirm Password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={form.confirmPassword}
+                      onChange={handleChange('confirmPassword')}
+                      error={!!errors.confirmPassword}
+                      helperText={errors.confirmPassword}
+                      fullWidth
+                      required
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockIcon sx={{ color: '#059669' }} />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              edge="end"
+                            >
+                              {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    {submitStatus === 'success' && (
+                      <Alert severity="success">
+                        Account created successfully! Redirecting to login...
+                      </Alert>
+                    )}
+
+                    {submitStatus === 'error' && (
                       <Alert severity="error">
-                        {submitError}
+                        {errors.email || 'Failed to create account. Please try again.'}
                       </Alert>
                     )}
 
@@ -210,42 +280,17 @@ export default function LoginPage() {
                       {isSubmitting ? (
                         <>
                           <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
-                          Signing In...
+                          Creating Account...
                         </>
                       ) : (
-                        'Sign In'
+                        'Create Account'
                       )}
                     </Button>
 
-                    <Box sx={{ position: 'relative', my: 3 }}>
-                      <Divider>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', px: 2 }}>
-                          OR
-                        </Typography>
-                      </Divider>
-                    </Box>
-
-                    <Button
-                      variant="outlined"
-                      onClick={handleGoogleSignIn}
-                      startIcon={<GoogleIcon />}
-                      sx={{
-                        py: 1.5,
-                        color: '#059669',
-                        borderColor: '#059669',
-                        '&:hover': {
-                          borderColor: '#047857',
-                          bgcolor: 'rgba(5, 150, 105, 0.04)',
-                        },
-                      }}
-                    >
-                      Continue with Google
-                    </Button>
-
                     <Typography variant="body2" sx={{ textAlign: 'center' }}>
-                      Don't have an account?{' '}
-                      <Link href="/signup" style={{ color: '#059669', textDecoration: 'none' }}>
-                        Sign up
+                      Already have an account?{' '}
+                      <Link href="/login" style={{ color: '#059669', textDecoration: 'none' }}>
+                        Sign in
                       </Link>
                     </Typography>
                   </Stack>

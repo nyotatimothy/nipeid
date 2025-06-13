@@ -7,10 +7,14 @@ export const en = {
     loading: 'Loading...',
     error: 'Error',
     success: 'Success',
+    buttons: {
+      back: 'Back',
+      next: 'Next'
+    }
   },
   home: {
-    title: 'Lost Your Documents?',
-    subtitle: "We'll Help You Find Them",
+    title: 'Find Your Lost Documents',
+    subtitle: 'Quick and secure document recovery',
     description: 'Our nationwide network of secure kiosks helps connect lost documents with their rightful owners. Quick, secure, and reliable recovery service across Kenya.',
     searchForm: {
       title: 'Search for Your Document',
@@ -31,29 +35,99 @@ export const en = {
       searchAgain: 'Search Again',
       contactSupport: 'Contact Support',
     },
+    search: {
+      title: 'Search for your document',
+      documentNumber: 'Document Number',
+      documentType: 'Document Type',
+      types: [
+        { value: 'national-id', label: 'National ID' },
+        { value: 'passport', label: 'Passport' },
+        { value: 'driving-license', label: 'Driving License' },
+        { value: 'birth-certificate', label: 'Birth Certificate' },
+        { value: 'other', label: 'Other' }
+      ],
+      button: 'Search',
+      searching: 'Searching...'
+    },
+    notFound: {
+      title: 'Document Not Found',
+      description: "We couldn't find your document in our system. Would you like to report it as lost?",
+      button: 'Report Lost Document'
+    }
   },
   about: {
-    title: 'About',
-    subtitle: 'Learn more about our document recovery service and how we\'re helping Kenyans',
-    description: 'We help Kenyans find and recover their lost documents through our nationwide network of kiosks and verification system. Our platform provides a secure and efficient way to locate and claim your missing documents.',
+    title: 'About NipeID',
+    subtitle: 'Revolutionizing lost document recovery in Kenya through technology and innovation',
+    description: "NipeID is Kenya's premier digital platform for lost document management and recovery. Our mission is to simplify the process of finding and retrieving lost identification documents through a secure, efficient, and user-friendly system.",
     features: {
-      title: 'Our Features',
-      quickSearch: {
-        title: 'Quick Search',
-        description: 'Find your lost documents using name, document number, or type',
-      },
-      secureVerification: {
-        title: 'Secure Verification',
-        description: 'Multi-step verification process to ensure legitimate claims',
-      },
-      realTimeUpdates: {
-        title: 'Real-time Updates',
-        description: 'Get instant notifications about your document status',
-      },
-      nationwideNetwork: {
-        title: 'Nationwide Network',
-        description: 'Access to kiosks and collection points across the country',
-      },
+      title: 'Key Features & Benefits',
+      items: {
+        security: {
+          title: 'Secure Document Management',
+          description: 'Advanced encryption and secure storage for all your identification documents.'
+        },
+        recovery: {
+          title: 'Quick Recovery',
+          description: 'Fast and efficient document recovery process through our network of kiosks.'
+        },
+        coverage: {
+          title: 'Nationwide Coverage',
+          description: 'Extensive network of kiosks across Kenya for convenient document pickup.'
+        },
+        notifications: {
+          title: 'Real-time Notifications',
+          description: 'Instant alerts when your documents are found and ready for collection.'
+        }
+      }
+    },
+    faq: {
+      title: 'Frequently Asked Questions',
+      items: [
+        {
+          question: 'How do I search for my lost document?',
+          answer: 'Simply enter your document number or name in the search bar on our homepage. Our system will check if your document has been found and is available for collection.'
+        },
+        {
+          question: 'What types of documents can I find through NipeID?',
+          answer: 'We handle various identification documents including National IDs, Passports, Driving Licenses, and Student IDs.'
+        },
+        {
+          question: 'How long does it take to recover a document?',
+          answer: 'Once your document is found in our system, you can collect it immediately from your nearest kiosk. The entire process typically takes less than 24 hours.'
+        },
+        {
+          question: 'What do I need to bring when collecting my document?',
+          answer: "You'll need to bring a valid form of identification and the reference number provided during your search."
+        },
+        {
+          question: 'Is there a fee for using NipeID services?',
+          answer: 'Basic document search is free. A small administrative fee may apply for document collection and verification.'
+        },
+        {
+          question: 'How secure is my information?',
+          answer: 'We employ bank-grade encryption and security measures to protect all personal information and documents in our system.'
+        },
+        {
+          question: 'How do I report a lost document?',
+          answer: 'You can report a lost document through our search page. If your document is not found in our system, you will be given the option to file a report.'
+        },
+        {
+          question: 'Can I get notifications when my document is found?',
+          answer: 'Yes, we will notify you via email and SMS when your document is found and ready for collection.'
+        },
+        {
+          question: 'What happens if someone claims my document?',
+          answer: 'We have a strict verification process to ensure documents are only released to their rightful owners. Multiple forms of identification are required.'
+        },
+        {
+          question: 'How can I contact support?',
+          answer: 'You can reach our support team through the contact form, email, phone, or WhatsApp. We aim to respond within 24 hours.'
+        }
+      ]
+    },
+    mission: {
+      title: 'Our Mission',
+      description: 'To provide a seamless and secure platform for Kenyans to recover their lost identification documents, reducing the stress and time associated with traditional recovery methods. We aim to leverage technology to create a more efficient and accessible document management system for all.'
     },
     impact: {
       title: 'Our Impact',
@@ -129,4 +203,27 @@ export const en = {
     { value: 'academic-certificate', label: 'Academic Certificate' },
     { value: 'other', label: 'Other' },
   ],
+  contact: {
+    title: 'Contact Support',
+    subtitle: 'Do you need help with finding your document, reporting a lost document, or have questions about our services? Our support team is here to assist you every step of the way.',
+    form: {
+      name: 'Name',
+      email: 'Email',
+      subject: 'Subject',
+      message: 'Message',
+      submit: 'Send Message',
+      sending: 'Sending...',
+      success: 'Your message has been sent successfully. We\'ll get back to you soon.',
+      error: 'Failed to send message. Please try again.',
+      tooManyAttempts: 'Too many attempts. Please try again later.'
+    },
+    info: {
+      title: 'Contact Information',
+      email: 'support@nipeid.com',
+      phone: '+254 700 000000',
+      whatsapp: '+254 700 000000',
+      location: 'Nairobi, Kenya',
+      hours: 'Mon - Fri, 8:00 AM - 5:00 PM'
+    }
+  }
 }; 

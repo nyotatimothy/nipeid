@@ -1,320 +1,227 @@
 'use client';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Paper,
-  useTheme,
-  useMediaQuery
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Stack,
 } from '@mui/material';
-import { motion } from 'framer-motion';
-import SearchIcon from '@mui/icons-material/Search';
-import SecurityIcon from '@mui/icons-material/Security';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import { People as PeopleIcon } from '@mui/icons-material';
-import MobileNavigation from '@/components/MobileNavigation';
-import WebNavigation from '@/components/WebNavigation';
+import {
+  Security as SecurityIcon,
+  Speed as SpeedIcon,
+  LocationOn as LocationIcon,
+  Notifications as NotificationsIcon,
+  ExpandMore as ExpandMoreIcon,
+} from '@mui/icons-material';
 import Image from 'next/image';
+import Link from 'next/link';
+import WebNavigation from '@/components/WebNavigation';
 import { useTranslation } from '@/utils/translations';
+import { en } from '@/locales/en';
 
-const featureKeys = ['quickSearch', 'secureVerification', 'realTimeUpdates', 'nationwideNetwork'] as const;
-const statKeys = ['documentsFound', 'documentsReturned', 'activeUsers', 'partnerKiosks'] as const;
+type Feature = {
+  icon: JSX.Element;
+  title: string;
+  description: string;
+};
+
+const features: Feature[] = [
+  {
+    icon: <SecurityIcon sx={{ fontSize: 40, color: '#059669' }} />,
+    title: 'Secure Document Management',
+    description: 'Advanced encryption and secure storage for all your identification documents.'
+  },
+  {
+    icon: <SpeedIcon sx={{ fontSize: 40, color: '#059669' }} />,
+    title: 'Quick Recovery',
+    description: 'Fast and efficient document recovery process through our network of kiosks.'
+  },
+  {
+    icon: <LocationIcon sx={{ fontSize: 40, color: '#059669' }} />,
+    title: 'Nationwide Coverage',
+    description: 'Extensive network of kiosks across Kenya for convenient document pickup.'
+  },
+  {
+    icon: <NotificationsIcon sx={{ fontSize: 40, color: '#059669' }} />,
+    title: 'Real-time Notifications',
+    description: 'Instant alerts when your documents are found and ready for collection.'
+  }
+];
+
+const faqs = [
+  {
+    question: 'How do I search for my lost document?',
+    answer: 'Simply enter your document number or name in the search bar on our homepage. Our system will check if your document has been found and is available for collection.'
+  },
+  {
+    question: 'What types of documents can I find through NipeID?',
+    answer: 'We handle various identification documents including National IDs, Passports, Driving Licenses, and Student IDs.'
+  },
+  {
+    question: 'How long does it take to recover a document?',
+    answer: 'Once your document is found in our system, you can collect it immediately from your nearest kiosk. The entire process typically takes less than 24 hours.'
+  },
+  {
+    question: 'What do I need to bring when collecting my document?',
+    answer: `You'll need to bring a valid form of identification and the reference number provided during your search.`
+  },
+  {
+    question: 'Is there a fee for using NipeID services?',
+    answer: 'Basic document search is free. A small administrative fee may apply for document collection and verification.'
+  },
+  {
+    question: 'How secure is my information?',
+    answer: 'We employ bank-grade encryption and security measures to protect all personal information and documents in our system.'
+  },
+  {
+    question: 'How do I report a lost document?',
+    answer: 'You can report a lost document through our search page. If your document is not found in our system, you will be given the option to file a report.'
+  },
+  {
+    question: 'Can I get notifications when my document is found?',
+    answer: 'Yes, we will notify you via email and SMS when your document is found and ready for collection.'
+  },
+  {
+    question: 'What happens if someone claims my document?',
+    answer: 'We have a strict verification process to ensure documents are only released to their rightful owners. Multiple forms of identification are required.'
+  },
+  {
+    question: 'How can I contact support?',
+    answer: 'You can reach our support team through the contact form, email, phone, or WhatsApp. We aim to respond within 24 hours.'
+  }
+];
 
 export default function AboutPage() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
 
-  const features = [
-    {
-      key: 'quickSearch',
-      icon: SearchIcon,
-    },
-    {
-      key: 'secureVerification',
-      icon: SecurityIcon,
-    },
-    {
-      key: 'realTimeUpdates',
-      icon: AccessTimeIcon,
-    },
-    {
-      key: 'nationwideNetwork',
-      icon: LocationOnIcon,
-    },
-  ];
-
-  const stats = [
-    { key: 'documentsFound', icon: DocumentScannerIcon },
-    { key: 'documentsReturned', icon: VerifiedUserIcon },
-    { key: 'activeUsers', icon: PeopleIcon },
-    { key: 'partnerKiosks', icon: LocationOnIcon },
-  ];
-
   return (
-    <Box sx={{ pb: { xs: 7, sm: 0 } }}>
-      <Box 
-        sx={{ 
-          background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
-          minHeight: '100vh'
-        }}
-      >
-        <Container maxWidth="lg">
-          {/* Hero Section */}
-          <Box
-            component={motion.div}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            sx={{
-              pt: { xs: 4, sm: 8 },
-              pb: { xs: 4, sm: 8 },
-              textAlign: 'center'
-            }}
-          >
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 2, 
-              mb: 4,
-              position: 'absolute',
-              top: 32,
-              left: 32
-            }}>
-              <Image 
-                src="/nipeID.png" 
-                alt={t('common.appName')} 
-                width={80} 
-                height={80}
-                style={{ objectFit: 'contain' }}
-              />
-            </Box>
+    <Box sx={{ pb: { xs: 7, sm: 0 }, bgcolor: 'background.default', minHeight: '100vh' }}>
+      <Box sx={{ background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', minHeight: '100vh' }}>
+        <Container maxWidth="lg" sx={{ py: 6 }}>
+          {/* Navigation Header */}
+          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Image 
+                  src="/nipeID.png" 
+                  alt="Nipe ID Logo" 
+                  width={80} 
+                  height={80}
+                  style={{ objectFit: 'contain' }}
+                />
+                <Typography variant="h4" sx={{ color: '#059669', fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
+                  {t<string>('common.appName')}
+                </Typography>
+              </Box>
+            </Link>
             <WebNavigation />
-            <Typography
-              variant={isMobile ? "h4" : "h3"}
-              component="h1"
-              gutterBottom
-              sx={{
-                fontWeight: 'bold',
-                color: '#059669',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
-              }}
-            >
-              {t('about.title')}
-            </Typography>
-            <Typography
-              variant={isMobile ? "body1" : "h6"}
-              sx={{
-                mb: 4,
-                color: theme.palette.text.secondary,
-                maxWidth: '600px',
-                mx: 'auto',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.05)'
-              }}
-            >
-              {t('about.subtitle')}
-            </Typography>
           </Box>
 
           {/* About Section */}
-          <Box
-            sx={{
-              py: { xs: 4, sm: 8 },
-              textAlign: 'center',
-              position: 'relative',
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '100px',
-                height: '4px',
-                background: 'linear-gradient(90deg, transparent, #059669, transparent)',
-                borderRadius: '2px'
-              }
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{
-                maxWidth: '800px',
-                mx: 'auto',
-                mb: 4,
-                color: theme.palette.text.secondary,
-                fontSize: isMobile ? '0.875rem' : '1rem',
-                lineHeight: 1.8,
-                backgroundColor: 'rgba(255,255,255,0.8)',
-                padding: 3,
-                borderRadius: 2,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
-              }}
-            >
-              {t('about.description')}
+          <Box sx={{ mb: 8, textAlign: 'center' }}>
+            <Typography variant="h3" sx={{ mb: 2, fontWeight: 700, color: '#059669' }}>
+              {t<string>('about.title')}
+            </Typography>
+            <Typography variant="h5" sx={{ mb: 4, color: '#059669', opacity: 0.9, maxWidth: '800px', mx: 'auto' }}>
+              {t<string>('about.subtitle')}
+            </Typography>
+            <Typography variant="body1" sx={{ 
+              mb: 4, 
+              maxWidth: '800px', 
+              mx: 'auto',
+              color: '#1f2937',
+              fontSize: '1.1rem',
+              lineHeight: 1.7
+            }}>
+              {t<string>('about.description')}
             </Typography>
           </Box>
 
           {/* Features Section */}
-          <Box
-            sx={{
-              py: { xs: 4, sm: 8 },
-              backgroundColor: 'rgba(255,255,255,0.9)',
-              borderRadius: 4,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
-            }}
-          >
-            <Typography
-              variant={isMobile ? "h5" : "h4"}
-              component="h2"
-              gutterBottom
-              sx={{ 
-                fontWeight: 'bold',
-                textAlign: 'center',
-                mb: 4
-              }}
-            >
-              {t('about.features.title')}
+          <Box sx={{ mb: 8 }}>
+            <Typography variant="h4" sx={{ mb: 4, fontWeight: 700, color: '#059669', textAlign: 'center' }}>
+              {t<string>('about.features.title')}
             </Typography>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  sm: '1fr 1fr',
-                  md: 'repeat(4, 1fr)'
-                },
-                gap: 3
-              }}
-            >
-              {features.map((feature, index) => (
-                <Paper
-                  key={index}
-                  elevation={1}
-                  sx={{
-                    p: 3,
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    borderRadius: 2,
-                    transition: 'transform 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-4px)'
-                    }
-                  }}
-                >
-                  <feature.icon
-                    sx={{
-                      fontSize: isMobile ? 32 : 40,
-                      color: '#059669',
-                      mb: 2
-                    }}
-                  />
-                  <Typography 
-                    variant={isMobile ? "subtitle1" : "h6"} 
-                    gutterBottom
-                    sx={{ fontWeight: 'medium' }}
-                  >
-                    {t(`about.features.${feature.key}.title`)}
-                  </Typography>
-                  <Typography 
-                    variant="body2" 
-                    color="text.secondary"
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 4 }}>
+              {Object.entries(t<typeof en.about.features.items>('about.features.items')).map(([key, feature], index) => (
+                <Box key={key}>
+                  <Card 
+                    elevation={3} 
                     sx={{ 
-                      fontSize: isMobile ? '0.875rem' : '1rem',
-                      lineHeight: 1.6
+                      height: '100%',
+                      borderRadius: 2,
+                      transition: 'transform 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-4px)'
+                      }
                     }}
                   >
-                    {t(`about.features.${feature.key}.description`)}
-                  </Typography>
-                </Paper>
+                    <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                      <Box sx={{ mb: 2 }}>{features[index].icon}</Box>
+                      <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                        {(feature as Feature).title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {(feature as Feature).description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Box>
               ))}
             </Box>
           </Box>
 
-          {/* Stats Section */}
-          <Box
-            sx={{
-              py: { xs: 4, sm: 8 },
-              bgcolor: 'background.default',
-              background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-              color: 'white',
-              borderRadius: 4,
-              mt: 4
-            }}
-          >
-            <Typography
-              variant={isMobile ? "h5" : "h4"}
-              component="h2"
-              gutterBottom
-              sx={{ 
-                fontWeight: 'bold',
-                textAlign: 'center',
-                mb: 4,
-                color: 'white'
-              }}
-            >
-              {t('about.impact.title')}
+          {/* FAQs Section */}
+          <Box sx={{ mb: 8 }}>
+            <Typography variant="h4" sx={{ mb: 4, fontWeight: 700, color: '#059669', textAlign: 'center' }}>
+              {t<string>('about.faq.title')}
             </Typography>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  sm: '1fr 1fr',
-                  md: 'repeat(4, 1fr)'
-                },
-                gap: 3
-              }}
-            >
-              {stats.map((stat, index) => (
-                <Paper
-                  key={index}
-                  elevation={1}
-                  sx={{
-                    p: 3,
-                    textAlign: 'center',
-                    borderRadius: 2,
-                    bgcolor: 'rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.2)'
-                  }}
-                >
-                  <stat.icon
-                    sx={{
-                      fontSize: isMobile ? 32 : 40,
-                      color: 'white',
-                      mb: 1
-                    }}
-                  />
-                  <Typography 
-                    variant={isMobile ? "h5" : "h4"} 
-                    component="div" 
-                    gutterBottom
-                    sx={{ fontWeight: 'bold', color: 'white' }}
-                  >
-                    {t(`about.impact.stats.${stat.key}.value`)}
-                  </Typography>
-                  <Typography 
-                    variant="body2" 
+            <Stack spacing={2}>
+              {t<typeof en.about.faq.items>('about.faq.items').map((faq: { question: string; answer: string }, index: number) => (
+                <Accordion key={index} sx={{ borderRadius: '8px !important' }}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
                     sx={{ 
-                      fontSize: isMobile ? '0.875rem' : '1rem',
-                      color: 'rgba(255,255,255,0.8)'
+                      backgroundColor: '#f0fdf4',
+                      borderRadius: '8px !important',
+                      '&.Mui-expanded': {
+                        borderBottomLeftRadius: '0 !important',
+                        borderBottomRightRadius: '0 !important'
+                      }
                     }}
                   >
-                    {t(`about.impact.stats.${stat.key}.label`)}
-                  </Typography>
-                </Paper>
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      {faq.question}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography variant="body1">
+                      {faq.answer}
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
               ))}
-            </Box>
+            </Stack>
           </Box>
 
-          {/* Mobile Navigation */}
-          <MobileNavigation />
+          {/* Mission Section */}
+          <Box>
+            <Card elevation={3} sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ mb: 2, fontWeight: 600, color: '#059669' }}>
+                  {t<string>('about.mission.title')}
+                </Typography>
+                <Typography variant="body1">
+                  {t<string>('about.mission.description')}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
         </Container>
       </Box>
     </Box>

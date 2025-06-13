@@ -6,16 +6,12 @@ import {
   Info as InfoIcon,
   Login as LoginIcon,
 } from '@mui/icons-material';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 export default function WebNavigation() {
-  const router = useRouter();
   const pathname = usePathname();
   const theme = useTheme();
-
-  const handleNavigation = (path: string) => {
-    router.push(path);
-  };
 
   const buttonStyle = (path: string) => ({
     width: 120,
@@ -32,8 +28,8 @@ export default function WebNavigation() {
     <Box 
       sx={{ 
         position: 'absolute',
-        top: 32,
-        right: 32,
+        top: { xs: 16, sm: 32 },
+        right: { xs: 16, sm: 32 },
         display: { xs: 'none', sm: 'flex' },
         gap: 2,
         zIndex: 1000,
@@ -41,29 +37,33 @@ export default function WebNavigation() {
     >
       <Box sx={{ display: 'flex', gap: 2 }}>
         <Button
+          component={Link}
+          href="/"
           startIcon={<HomeIcon />}
-          onClick={() => handleNavigation('/')}
           sx={buttonStyle('/')}
         >
           Home
         </Button>
         <Button
+          component={Link}
+          href="/contact"
           startIcon={<ContactIcon />}
-          onClick={() => handleNavigation('/contact')}
           sx={buttonStyle('/contact')}
         >
           Contact
         </Button>
         <Button
+          component={Link}
+          href="/about"
           startIcon={<InfoIcon />}
-          onClick={() => handleNavigation('/about')}
           sx={buttonStyle('/about')}
         >
           About
         </Button>
         <Button
+          component={Link}
+          href="/login"
           startIcon={<LoginIcon />}
-          onClick={() => handleNavigation('/login')}
           sx={buttonStyle('/login')}
         >
           Login
