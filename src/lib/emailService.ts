@@ -11,8 +11,11 @@ const emailConfig = {
   },
 };
 
-// Create transporter
-const transporter = nodemailer.createTransport(emailConfig);
+// Create transporter only if configuration is available
+let transporter: nodemailer.Transporter | null = null;
+if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+  transporter = nodemailer.createTransport(emailConfig);
+}
 
 export interface EmailOptions {
   to: string;
@@ -23,6 +26,12 @@ export interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
+    // Check if transporter is available
+    if (!transporter) {
+      console.warn('Email service is not configured');
+      return false;
+    }
+
     // Verify transporter configuration
     await transporter.verify();
     
