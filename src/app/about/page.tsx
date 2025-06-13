@@ -19,6 +19,7 @@ import MobileNavigation from '@/components/MobileNavigation';
 import WebNavigation from '@/components/WebNavigation';
 import Image from 'next/image';
 import { useTranslation } from '@/utils/translations';
+import { en } from '@/locales/en';
 
 const featureKeys = ['quickSearch', 'secureVerification', 'realTimeUpdates', 'nationwideNetwork'] as const;
 const statKeys = ['documentsFound', 'documentsReturned', 'activeUsers', 'partnerKiosks'] as const;
