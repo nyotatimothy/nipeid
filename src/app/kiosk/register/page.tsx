@@ -71,7 +71,7 @@ export default function KioskRegisterPage() {
       <AppBar position="static" color="transparent" elevation={0} sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Avatar src="/myID.png" alt="MyID Logo" sx={{ width: 72, height: 72, bgcolor: "white", boxShadow: 3 }} />
+            <Avatar src="/nipeID.png" alt="Nipe ID Logo" sx={{ width: 72, height: 72, bgcolor: "white", boxShadow: 3 }} />
             <Button href="/" component={Link} variant="text" color="primary" sx={{ minWidth: 0, p: 0, mr: 1, fontWeight: 700 }}>
               Home
             </Button>

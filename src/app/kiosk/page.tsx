@@ -51,6 +51,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SecurityIcon from '@mui/icons-material/Security';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import Image from 'next/image';
 
 const statusLabels: Record<string, string> = {
   UPLOADED: 'Uploaded',
@@ -396,13 +397,15 @@ export default function KioskDashboardPage() {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {/* Logo */}
             <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
-              <Avatar 
-                src="/myID.png" 
-                alt="MyID Logo" 
-                sx={{ width: 48, height: 48, mr: 2 }}
+              <Image 
+                src="/nipeID.png" 
+                alt="Nipe ID Logo" 
+                width={80} 
+                height={80}
+                style={{ objectFit: 'contain' }}
               />
               <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                MyID
+                Nipe ID
               </Typography>
             </Box>
 
@@ -413,10 +416,10 @@ export default function KioskDashboardPage() {
                 component={Link} 
                 variant="text" 
                 sx={{ 
-                  color: '#1976d2', 
+                  color: '#059669', 
                   fontWeight: 600,
-                  bgcolor: '#e3f2fd',
-                  '&:hover': { bgcolor: '#bbdefb' }
+                  bgcolor: '#ecfdf5',
+                  '&:hover': { bgcolor: '#d1fae5' }
                 }}
               >
                 DASHBOARD
@@ -445,7 +448,7 @@ export default function KioskDashboardPage() {
                     Kiosk Manager
                   </Typography>
                 </Box>
-                <Avatar sx={{ bgcolor: '#1976d2', width: 40, height: 40 }}>
+                <Avatar sx={{ bgcolor: '#059669', width: 40, height: 40 }}>
                   {((session.user as any)?.name || 'K').charAt(0).toUpperCase()}
                 </Avatar>
                 <Button 
@@ -455,7 +458,7 @@ export default function KioskDashboardPage() {
                   sx={{ 
                     borderColor: '#e2e8f0',
                     color: '#64748b',
-                    '&:hover': { borderColor: '#cbd5e1', bgcolor: '#f8fafc' }
+                    '&:hover': { borderColor: '#cbd5e1', bgcolor: '#f0fdf4' }
                   }}
                 >
                   Sign Out
@@ -512,12 +515,12 @@ export default function KioskDashboardPage() {
               <Box sx={{ 
                 p: 2, 
                 borderRadius: 2, 
-                bgcolor: '#dbeafe',
+                bgcolor: '#ecfdf5',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <DescriptionIcon sx={{ fontSize: 32, color: '#3b82f6' }} />
+                <DescriptionIcon sx={{ fontSize: 32, color: '#059669' }} />
               </Box>
             </Box>
           </Card>
@@ -1397,7 +1400,7 @@ export default function KioskDashboardPage() {
       {/* Comprehensive Footer */}
       {/* Statistics Bar */}
       <Box sx={{ 
-        bgcolor: '#3b82f6', 
+        bgcolor: '#059669', 
         color: 'white', 
         py: 4,
         textAlign: 'center'
@@ -1447,7 +1450,7 @@ export default function KioskDashboardPage() {
             {/* MyID Column */}
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                MyID
+                Nipe ID
               </Typography>
               <Typography variant="body2" sx={{ color: '#94a3b8', mb: 3, lineHeight: 1.6 }}>
                 Secure document recovery service connecting finders with owners through our nationwide kiosk network.
@@ -1559,7 +1562,7 @@ export default function KioskDashboardPage() {
           {/* Copyright */}
           <Divider sx={{ my: 4, borderColor: '#334155' }} />
           <Typography variant="body2" sx={{ textAlign: 'center', color: '#94a3b8' }}>
-            © 2025 MyID. All rights reserved.
+            © 2025 Nipe ID. All rights reserved.
           </Typography>
         </Container>
       </Box>

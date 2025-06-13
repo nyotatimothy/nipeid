@@ -16,6 +16,9 @@ import { Google as GoogleIcon, Facebook as FacebookIcon, Apple as AppleIcon } fr
 import { IconButton, InputAdornment, Paper } from '@mui/material';
 import { Visibility, VisibilityOff, Email as EmailIcon, Lock as LockIcon } from '@mui/icons-material';
 import Image from 'next/image';
+import MobileNavigation from '@/components/MobileNavigation';
+import WebNavigation from '@/components/WebNavigation';
+import { useTranslation } from '@/utils/translations';
 
 export default function LoginPage() {
   const { data: session, status } = useSession();
@@ -26,6 +29,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslation();
 
   const validRoles = ['ADMIN', 'POSTER', 'USER', 'KIOSK_MANAGER'];
 
@@ -53,7 +57,7 @@ export default function LoginPage() {
         alignItems="center" 
         justifyContent="center"
         sx={{
-          background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+          background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
         }}
       >
         <CircularProgress sx={{ color: 'white' }} />
@@ -76,7 +80,7 @@ export default function LoginPage() {
           alignItems="center" 
           justifyContent="center" 
           sx={{
-            background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+            background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
             p: 2
           }}
         >
@@ -131,68 +135,75 @@ export default function LoginPage() {
   };
 
   return (
-    <Box 
-      minHeight="100vh" 
-      display="flex" 
-      flexDirection="column" 
-      alignItems="center" 
-      justifyContent="center" 
-      sx={{
-        background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
-        p: 2
-      }}
-    >
-      <Box 
-        sx={{ 
-          position: 'absolute',
-          top: { xs: 16, md: 32 },
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2
-        }}
-      >
-        <Box 
-          sx={{ 
-            width: 48, 
-            height: 48, 
-            bgcolor: 'white',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: 2
-          }}
-        >
-          <Image src="/myID.png" alt="MyID Logo" width={40} height={40} />
-        </Box>
-        <Typography variant="h4" sx={{ color: 'white', fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
-          MyID
-        </Typography>
+    <Box sx={{ 
+      minHeight: '100vh',
+      bgcolor: '#f0fdf4',
+      position: 'relative',
+      pb: { xs: 7, sm: 0 }
+    }}>
+      {/* Logo Section */}
+      <Box sx={{ 
+        position: 'absolute',
+        top: { xs: 16, sm: 32 },
+        left: 32,
+        width: 'auto',
+        zIndex: 2
+      }}>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2
+          }}>
+            <Image 
+              src="/nipeID.png" 
+              alt={t('common.appName')} 
+              width={80} 
+              height={80}
+              style={{ objectFit: 'contain' }}
+            />
+            <Typography variant="h4" sx={{ color: '#059669', fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
+              {t('common.appName')}
+            </Typography>
+          </Box>
+        </Link>
       </Box>
 
-      <Paper 
-        elevation={24}
-        sx={{ 
-          maxWidth: 400,
-          width: '100%',
-          borderRadius: 4,
-          overflow: 'hidden',
-          display: 'flex'
-        }}
-      >
-        <Box sx={{ flex: 1, p: 4 }}>
+      {/* Web Navigation */}
+      <WebNavigation />
+
+      {/* Main Content */}
+      <Box sx={{ 
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pt: { xs: 12, sm: 0 },
+        px: 2
+      }}>
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            p: 4, 
+            width: '100%', 
+            maxWidth: 400,
+            borderRadius: 2,
+            bgcolor: 'white',
+            position: 'relative'
+          }}
+        >
           <Typography variant="h5" fontWeight={700} gutterBottom align="center">
-            Welcome Back
+            {t('login.title')}
           </Typography>
           <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 4 }}>
-            Sign in to access your MyID account
+            {t('login.subtitle')}
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit} display="flex" flexDirection="column" gap={2.5}>
             <TextField
-              label="Email"
+              label={t('login.form.email')}
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -208,7 +219,7 @@ export default function LoginPage() {
               }}
             />
             <TextField
-              label="Password"
+              label={t('login.form.password')}
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -242,11 +253,11 @@ export default function LoginPage() {
               style={{ 
                 alignSelf: 'flex-end',
                 textDecoration: 'none',
-                color: '#1976d2',
+                color: '#059669',
                 fontSize: '0.875rem'
               }}
             >
-              Forgot password?
+              {t('login.form.forgotPassword')}
             </Link>
 
             <Button
@@ -258,15 +269,19 @@ export default function LoginPage() {
                 py: 1.5,
                 fontWeight: 700,
                 borderRadius: 2,
-                boxShadow: 2
+                boxShadow: 2,
+                bgcolor: '#059669',
+                '&:hover': {
+                  bgcolor: '#047857'
+                }
               }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign in'}
+              {loading ? <CircularProgress size={24} color="inherit" /> : t('login.form.signIn')}
             </Button>
 
             <Divider sx={{ my: 2 }}>
               <Typography variant="body2" color="text.secondary" sx={{ px: 1 }}>
-                OR
+                {t('login.form.or')}
               </Typography>
             </Divider>
 
@@ -275,45 +290,70 @@ export default function LoginPage() {
                 variant="outlined"
                 onClick={() => handleSocialLogin('google')}
                 startIcon={<GoogleIcon />}
-                sx={{ borderRadius: 2, flex: 1 }}
+                sx={{ 
+                  borderRadius: 2, 
+                  flex: 1,
+                  borderColor: '#059669',
+                  color: '#059669',
+                  '&:hover': {
+                    borderColor: '#047857',
+                    bgcolor: '#f0fdf4'
+                  }
+                }}
               >
-                Google
+                {t('login.form.googleButton')}
               </Button>
               <Button
                 variant="outlined"
                 onClick={() => handleSocialLogin('facebook')}
                 startIcon={<FacebookIcon />}
-                sx={{ borderRadius: 2, flex: 1 }}
+                sx={{ 
+                  borderRadius: 2, 
+                  flex: 1,
+                  borderColor: '#059669',
+                  color: '#059669',
+                  '&:hover': {
+                    borderColor: '#047857',
+                    bgcolor: '#f0fdf4'
+                  }
+                }}
               >
-                Facebook
+                {t('login.form.facebookButton')}
               </Button>
             </Box>
 
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Typography variant="body2" color="text.secondary">
-                Don't have an account?{' '}
+                {t('login.form.noAccount')}{' '}
                 <Link 
                   href="/signup"
                   style={{ 
                     textDecoration: 'none',
-                    color: '#1976d2',
+                    color: '#059669',
                     fontWeight: 600
                   }}
                 >
-                  Sign up
+                  {t('login.form.signUp')}
                 </Link>
               </Typography>
             </Box>
           </Box>
-        </Box>
-      </Paper>
+        </Paper>
 
-      <Typography variant="body2" sx={{ color: 'white', mt: 4, textAlign: 'center' }}>
-        By signing in, you agree to our{' '}
-        <Link href="/terms" style={{ color: 'white', textDecoration: 'underline' }}>Terms of Service</Link>
-        {' '}and{' '}
-        <Link href="/privacy" style={{ color: 'white', textDecoration: 'underline' }}>Privacy Policy</Link>
-      </Typography>
+        <Typography variant="body2" sx={{ color: '#059669', mt: 4, textAlign: 'center' }}>
+          {t('login.terms.text')}{' '}
+          <Link href="/terms" style={{ color: '#059669', textDecoration: 'underline' }}>
+            {t('login.terms.termsLink')}
+          </Link>
+          {' '}{t('login.terms.and')}{' '}
+          <Link href="/privacy" style={{ color: '#059669', textDecoration: 'underline' }}>
+            {t('login.terms.privacyLink')}
+          </Link>
+        </Typography>
+      </Box>
+
+      {/* Mobile Navigation */}
+      <MobileNavigation />
     </Box>
   );
 } 

@@ -152,7 +152,13 @@ export default function UserDashboardPage() {
             <Button href="/" component={Link} variant="text" color="primary" sx={{ minWidth: 0, p: 0, mr: 1, fontWeight: 700 }}>
               Home
             </Button>
-            <Avatar src="/myID.png" alt="MyID Logo" sx={{ width: 72, height: 72, bgcolor: 'white', boxShadow: 3 }} />
+            <Image 
+              src="/nipeID.png" 
+              alt="Nipe ID Logo" 
+              width={80} 
+              height={80}
+              style={{ objectFit: 'contain' }}
+            />
           </Box>
           {session && (
             <Button variant="contained" color="primary" onClick={() => signOut()}>

@@ -80,6 +80,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import Image from 'next/image';
 
 const tabs = [
   { key: 'kiosks', label: 'Kiosks' },
@@ -433,19 +434,13 @@ export default function AdminPanelPage() {
           <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar 
-                  src="/myID.png" 
-                  alt="MyID Logo" 
-                  sx={{ 
-                    width: 40, 
-                    height: 40, 
-                    bgcolor: '#3b82f6', 
-                    color: 'white',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  ID
-                </Avatar>
+                <Image 
+                  src="/nipeID.png" 
+                  alt="Nipe ID Logo" 
+                  width={60} 
+                  height={60}
+                  style={{ objectFit: 'contain' }}
+                />
                 <Typography variant="h6" fontWeight={700} color="primary">
                   Admin Portal
                 </Typography>
@@ -1567,10 +1562,10 @@ export default function AdminPanelPage() {
           {/* MyID Column */}
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3, color: '#1f2937' }}>
-              MyID Admin
+              Nipe ID Admin
             </Typography>
             <Typography variant="body2" sx={{ color: '#6b7280', lineHeight: 1.6, mb: 3 }}>
-              Administrative portal for managing the MyID lost and found service platform.
+              Administrative portal for managing the Nipe ID lost and found service platform.
             </Typography>
           </Box>
 
@@ -1685,7 +1680,7 @@ export default function AdminPanelPage() {
         textAlign: 'center'
       }}>
         <Typography variant="body2" sx={{ color: '#6b7280' }}>
-          © 2025 MyID Admin Portal. All rights reserved.
+          © 2025 Nipe ID Admin Portal. All rights reserved.
         </Typography>
       </Box>
     </Box>

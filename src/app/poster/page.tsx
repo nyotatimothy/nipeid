@@ -428,14 +428,16 @@ export default function PosterDashboardPage() {
           <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
             {/* Left side - Logo and Navigation */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar 
-                  src="/myID.png" 
-                  alt="MyID Logo" 
-                  sx={{ width: 48, height: 48, bgcolor: 'white', boxShadow: 2 }} 
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Image 
+                  src="/nipeID.png" 
+                  alt="Nipe ID Logo" 
+                  width={80} 
+                  height={80}
+                  style={{ objectFit: 'contain' }}
                 />
                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#1976d2' }}>
-                  MyID Poster
+                  Nipe ID Poster
                 </Typography>
               </Box>
               
@@ -1638,7 +1640,7 @@ export default function PosterDashboardPage() {
             {/* MyID Column */}
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-                MyID
+                Nipe ID
               </Typography>
               <Typography variant="body2" sx={{ mb: 3, opacity: 0.8, lineHeight: 1.6 }}>
                 Connecting lost documents with their rightful owners through our nationwide network of secure kiosks and trusted partners.
@@ -1729,7 +1731,7 @@ export default function PosterDashboardPage() {
           {/* Copyright */}
           <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)', mb: 4 }} />
           <Typography variant="body2" sx={{ textAlign: 'center', opacity: 0.6 }}>
-            © 2025 MyID. All rights reserved.
+            © 2025 Nipe ID. All rights reserved.
           </Typography>
         </Container>
       </Box>
