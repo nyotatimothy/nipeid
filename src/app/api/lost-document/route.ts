@@ -5,6 +5,9 @@ import { Resend } from 'resend';
 const prisma = new PrismaClient();
 let resend: Resend | null = null;
 
+// Import verification codes from SMS verification route
+import { verificationCodes } from '../sms-verification/route';
+
 // Initialize Resend only if API key is available
 if (process.env.RESEND_API_KEY) {
   resend = new Resend(process.env.RESEND_API_KEY);
@@ -16,12 +19,32 @@ export async function POST(req: NextRequest) {
     console.log('Received data:', data); // Debug log
     
     // Validate required fields
-    if (!data.fullName || !data.phone || !data.documentNumber || !data.documentType) {
+    if (!data.fullName || !data.verificationId || !data.documentNumber || !data.documentType) {
       return NextResponse.json(
         { success: false, message: 'Required fields are missing.' },
         { status: 400 }
       );
     }
+    
+    // Verify that the phone number has been verified via SMS
+    const verificationId = data.verificationId;
+    if (!verificationCodes.has(verificationId)) {
+      return NextResponse.json(
+        { success: false, message: 'Phone verification is required. Please complete the SMS verification process.' },
+        { status: 400 }
+      );
+    }
+    
+    const verificationData = verificationCodes.get(verificationId)!;
+    if (!verificationData.verified || !verificationData.phoneNumber) {
+      return NextResponse.json(
+        { success: false, message: 'Phone number has not been verified. Please complete the SMS verification process.' },
+        { status: 400 }
+      );
+    }
+    
+    // Use the verified phone number from the verification data
+    const verifiedPhone = verificationData.phoneNumber;
 
     // Create contact request
     const contactRequest = await prisma.contactRequest.create({
@@ -31,7 +54,7 @@ export async function POST(req: NextRequest) {
         firstName: data.fullName.split(' ')[0],
         lastName: data.fullName.split(' ').slice(1).join(' '),
         email: data.email,
-        phone: data.phone,
+        phone: verifiedPhone,
         message: `Names on document: ${data.namesOnDocument || 'Not provided'}`,
       },
     });
@@ -100,4 +123,4 @@ export async function POST(req: NextRequest) {
   } finally {
     await prisma.$disconnect();
   }
-} 
+}

@@ -5,6 +5,7 @@ import {
   ContactSupport as ContactIcon,
   Info as InfoIcon,
   Login as LoginIcon,
+  Payment as PaymentIcon,
 } from '@mui/icons-material';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -46,11 +47,11 @@ export default function WebNavigation() {
         </Button>
         <Button
           component={Link}
-          href="/contact"
-          startIcon={<ContactIcon />}
-          sx={buttonStyle('/contact')}
+          href="/test-payment"
+          startIcon={<PaymentIcon />}
+          sx={buttonStyle('/test-payment')}
         >
-          Contact
+          Test Payment
         </Button>
         <Button
           component={Link}
@@ -59,6 +60,14 @@ export default function WebNavigation() {
           sx={buttonStyle('/about')}
         >
           About
+        </Button>
+        <Button
+          component={Link}
+          href="/contact"
+          startIcon={<ContactIcon />}
+          sx={buttonStyle('/contact')}
+        >
+          Contact
         </Button>
         <Button
           component={Link}
@@ -71,4 +80,4 @@ export default function WebNavigation() {
       </Box>
     </Box>
   );
-} 
+}

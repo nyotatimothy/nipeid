@@ -1,104 +1,132 @@
-import { PrismaClient, Role, DocumentType, Condition, DocumentStatus } from '@prisma/client';
+import { PrismaClient, Role, DocumentType, DocumentStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+function randomFrom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 async function main() {
-  // Create admin user
-  const hashedPassword = await bcrypt.hash('admin@nipeid.com', 10);
+  // Create 5 admin users
+  const adminUsers = [];
+  for (let i = 1; i <= 5; i++) {
+    const email = `admin${i}@nipeid.com`;
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@nipeid.com' },
+      where: { email },
     update: {},
     create: {
-      email: 'admin@nipeid.com',
-      name: 'System Admin',
-      password: hashedPassword,
+        email,
+        name: `Admin User ${i}`,
+        password: await bcrypt.hash(`admin${i}@pass`, 10),
       role: Role.ADMIN,
-      status: 'ACTIVE'
+        status: 'ACTIVE',
     },
   });
+    adminUsers.push(admin);
+  }
 
-  // Create a test kiosk
-  const kiosk = await prisma.kiosk.upsert({
-    where: { name: 'Central Kiosk' },
+  // Create 5 poster users
+  const posterUsers = [];
+  for (let i = 1; i <= 5; i++) {
+    const email = `poster${i}@nipeid.com`;
+    const poster = await prisma.user.upsert({
+      where: { email },
     update: {},
     create: {
-      name: 'Central Kiosk',
-      location: 'Nairobi CBD',
-      phone: '+254700000000',
-      email: 'central@nipeid.com',
+        email,
+        name: `Poster User ${i}`,
+        password: await bcrypt.hash(`poster${i}@pass`, 10),
+        role: Role.POSTER,
       status: 'ACTIVE',
-      address: 'Moi Avenue',
-      city: 'Nairobi',
-      county: 'Nairobi',
-      latitude: -1.2921,
-      longitude: 36.8219,
     },
   });
+    posterUsers.push(poster);
+  }
 
-  // Create a test poster user
-  const poster = await prisma.user.upsert({
-    where: { email: 'poster@nipeid.com' },
+  // Create 5 kiosk managers
+  const kioskManagers = [];
+  for (let i = 1; i <= 5; i++) {
+    const email = `kioskmanager${i}@nipeid.com`;
+    const manager = await prisma.user.upsert({
+      where: { email },
     update: {},
     create: {
-      email: 'poster@nipeid.com',
-      name: 'Test Poster',
-      password: await bcrypt.hash('poster@123', 10),
-      role: Role.POSTER,
-      status: 'ACTIVE'
+        email,
+        name: `Kiosk Manager ${i}`,
+        password: await bcrypt.hash(`kioskmanager${i}@pass`, 10),
+        role: Role.KIOSK_MANAGER,
+        status: 'ACTIVE',
     },
   });
+    kioskManagers.push(manager);
+  }
 
-  // Create test documents
-  const documents = [
-    {
-      firstName: 'John',
-      lastName: 'Doe',
-      dateOfBirth: new Date('1990-01-01'),
-      documentNumber: 'ID123456',
-      documentType: DocumentType.NATIONAL_ID,
-      foundLocation: 'Bus Station',
-      foundDistrict: 'Central',
-      foundDivision: 'CBD',
-      foundSubLocation: 'Bus Terminal',
-      dateFound: new Date('2024-03-01'),
-      condition: Condition.GOOD,
-      status: DocumentStatus.UPLOADED,
-    },
-    {
-      firstName: 'Jane',
-      lastName: 'Smith',
-      dateOfBirth: new Date('1985-05-15'),
-      documentNumber: 'PP789012',
-      documentType: DocumentType.PASSPORT,
-      foundLocation: 'Shopping Mall',
-      foundDistrict: 'Westlands',
-      foundDivision: 'Mall Area',
-      foundSubLocation: 'Food Court',
-      dateFound: new Date('2024-03-05'),
-      condition: Condition.MEDIUM,
-      status: DocumentStatus.KIOSK_CONFIRMED,
-    },
-    {
-      firstName: 'Michael',
-      lastName: 'Johnson',
-      dateOfBirth: new Date('1995-08-20'),
-      documentNumber: 'DL345678',
-      documentType: DocumentType.DRIVING_LICENSE,
-      foundLocation: 'Parking Lot',
-      foundDistrict: 'Karen',
-      foundDivision: 'Shopping Center',
-      foundSubLocation: 'Basement Parking',
-      dateFound: new Date('2024-03-10'),
-      condition: Condition.GOOD,
-      status: DocumentStatus.UPLOADED,
-    },
+  // Create 10 regular users
+  const regularUsers = [];
+  for (let i = 1; i <= 10; i++) {
+    const email = `user${i}@nipeid.com`;
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        email,
+        name: `User ${i}`,
+        password: await bcrypt.hash(`user${i}@pass`, 10),
+        role: Role.USER,
+        status: 'ACTIVE',
+      },
+    });
+    regularUsers.push(user);
+  }
+
+  // Create 10 kiosks
+  const kioskLocations = [
+    'Nairobi CBD', 'Westlands', 'Kasarani', 'Karen', 'Eastleigh',
+    'Mombasa Island', 'Kisumu Center', 'Eldoret Town', 'Thika Road', 'Machakos Bus Park'
+  ];
+  const kiosks = [];
+  for (let i = 0; i < 10; i++) {
+    const kiosk = await prisma.kiosk.upsert({
+      where: { id: `kiosk-id-${i + 1}` },
+      update: {},
+      create: {
+        id: `kiosk-id-${i + 1}`,
+        name: `Kiosk ${i + 1}`,
+        location: kioskLocations[i],
+      },
+    });
+    kiosks.push(kiosk);
+  }
+
+  // Create 20 documents with various statuses
+  const firstNames = ['John', 'Jane', 'Michael', 'Emily', 'David', 'Sarah', 'Chris', 'Anna', 'Brian', 'Linda', 'Peter', 'Grace', 'Paul', 'Diana', 'Kevin', 'Alice', 'George', 'Ruth', 'Victor', 'Mary'];
+  const lastNames = ['Doe', 'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller', 'Davis', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Garcia', 'Martinez'];
+  const docTypes = [DocumentType.NATIONAL_ID, DocumentType.PASSPORT, DocumentType.DRIVING_LICENSE, DocumentType.BIRTH_CERTIFICATE, DocumentType.OTHER];
+  const statuses = [
+    DocumentStatus.UPLOADED,
+    DocumentStatus.AWAITING_KIOSK_ACK,
+    DocumentStatus.KIOSK_CONFIRMED,
+    DocumentStatus.CLAIMED,
+    DocumentStatus.DISPATCHED,
+    DocumentStatus.ARCHIVED
   ];
 
-  for (const doc of documents) {
+  for (let i = 0; i < 20; i++) {
+    const firstName = randomFrom(firstNames);
+    const lastName = randomFrom(lastNames);
+    const documentType = randomFrom(docTypes);
+    const status = randomFrom(statuses);
+    const kiosk = randomFrom(kiosks);
+    const poster = randomFrom(posterUsers);
+    const documentNumber = `${documentType.substring(0,2).toUpperCase()}${Math.floor(100000 + Math.random() * 900000)}`;
     await prisma.document.create({
       data: {
-        ...doc,
+        firstName,
+        lastName,
+        documentNumber,
+        documentType,
+        status,
         kioskId: kiosk.id,
         posterId: poster.id,
       },

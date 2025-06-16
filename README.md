@@ -1,109 +1,255 @@
-<<<<<<< HEAD
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
-
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
-
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
-
----
-
-## Edit a file
-
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
-
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
-
----
-
-## Create a file
-
-Next, you’ll add a new file to this repository.
-
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
-
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
-
----
-
-## Clone a repository
-
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
-
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
-
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
-=======
 # Nipe ID: Lost & Found Identity Document App
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+A Next.js application for managing lost and found identity documents in Kenya. This platform connects document finders with owners through a network of verified kiosks.
+
+## Features
+
+- Document search and claim system
+- Role-based access control (Visitor, User, Poster, Kiosk Manager, Admin)
+- Kiosk management and document handover tracking
+- Email notifications
+- Mobile-responsive design
+- Secure document handling
+
+## Tech Stack
+
+- **Frontend:** Next.js 14 (App Router), React, TailwindCSS
+- **Backend:** Next.js API Routes, Prisma ORM
+- **Database:** PostgreSQL
+- **Authentication:** NextAuth.js
+- **Deployment:** Vercel
+- **Email:** Nodemailer
 
 ## Getting Started
 
-1. **Install dependencies:**
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/MyIDApp.git
+   cd MyIDApp
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
    # or
    yarn install
    ```
-2. **Run the development server:**
+
+3. **Set up environment variables:**
+   Create a `.env` file in the root directory with the following variables:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://user:password@localhost:5432/myidapp"
+
+   # NextAuth
+   NEXTAUTH_URL="http://localhost:3000"
+   NEXTAUTH_SECRET="your-secret-key"
+
+   # Email (for production)
+   SMTP_HOST="your-smtp-host"
+   SMTP_PORT="587"
+   SMTP_USER="your-smtp-user"
+   SMTP_PASSWORD="your-smtp-password"
+   SMTP_FROM="noreply@myidapp.com"
+
+   # Google OAuth (optional)
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_CLIENT_SECRET="your-google-client-secret"
+   ```
+
+4. **Set up the database:**
+   ```bash
+   # Generate Prisma client
+   npx prisma generate
+
+   # Run migrations
+   npx prisma migrate dev
+
+   # Seed the database (optional)
+   npx prisma db seed
+   ```
+
+5. **Run the development server:**
    ```bash
    npm run dev
    # or
    yarn dev
    ```
-3. **Open the app:**
+
+6. **Open the app:**
    Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-## User Roles & Dashboards
+## Sample Credentials
 
-- **Visitor:** Can search for documents, but must log in to claim.
-- **User:** Can claim documents, view claimed docs, and report disputes.
-- **Poster:** Can upload found documents and manage their uploads.
-- **Kiosk Manager:** Manages kiosk inventory and document handover.
-- **Admin:** Approves posters/kiosks, manages users, and views analytics.
+For testing purposes, you can use the following sample accounts:
 
-## Testing Role-Based Protection
+### Admin Account
+- **Email:** admin@myidapp.com
+- **Password:** Admin@123
+- **Role:** Admin
+- **Access:** Full system access including user management, kiosk approval, and analytics
 
-- Try to access `/admin`, `/poster`, `/kiosk`, `/user` as different roles or as a visitor.
-- Unauthorized access will redirect to login or the correct dashboard.
+### Regular User Account
+- **Email:** user@myidapp.com
+- **Password:** User@123
+- **Role:** User
+- **Access:** Can search and claim documents, view claimed documents, and report disputes
 
-## Accessibility & Mobile
+### Kiosk Manager Account
+- **Email:** kiosk@myidapp.com
+- **Password:** Kiosk@123
+- **Role:** Kiosk Manager
+- **Access:** Can manage kiosk inventory and document handover
 
-- All forms and buttons are keyboard accessible.
-- ARIA labels and semantic HTML are used for screen readers.
-- Layouts are responsive for mobile and desktop.
+### Document Poster Account
+- **Email:** poster@myidapp.com
+- **Password:** Poster@123
+- **Role:** Poster
+- **Access:** Can upload found documents and manage uploads
+
+> **Note:** These are sample credentials for development and testing. In production, these accounts should be changed or removed for security reasons.
+
+## Deployment Steps
+
+1. **Prepare the project:**
+   - Ensure all environment variables are set in your Vercel project settings
+   - Update `next.config.js` to include necessary configurations:
+     ```js
+     /** @type {import('next').NextConfig} */
+     const nextConfig = {
+       reactStrictMode: true,
+       swcMinify: true,
+       output: 'standalone',
+       env: {
+         NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV || 'development'
+       },
+       eslint: {
+         ignoreDuringBuilds: true,
+         dirs: ['src']
+       },
+       typescript: {
+         ignoreBuildErrors: true
+       },
+       images: {
+         domains: ['lh3.googleusercontent.com'],
+       },
+       async headers() {
+         return [
+           {
+             source: '/api/:path*',
+             headers: [
+               { key: 'Access-Control-Allow-Credentials', value: 'true' },
+               { key: 'Access-Control-Allow-Origin', value: '*' },
+               { key: 'Access-Control-Allow-Methods', value: 'GET,DELETE,PATCH,POST,PUT' },
+               { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' },
+             ]
+           }
+         ]
+       }
+     };
+     ```
+
+2. **Deploy to Vercel:**
+   - Connect your GitHub repository to Vercel
+   - Configure the following settings in Vercel:
+     - Framework Preset: Next.js
+     - Build Command: `next build`
+     - Output Directory: `.next`
+     - Install Command: `npm install`
+     - Development Command: `next dev`
+   - Add all required environment variables in Vercel's project settings
+   - Deploy the project
+
+3. **Set up Continuous Deployment:**
+   - In your Vercel project dashboard, go to Settings > Git
+   - Ensure "Auto Deploy" is enabled
+   - Configure branch deployments:
+     - Production Branch: `main` (or your default branch)
+     - Preview Branches: `feature/*`, `develop`, etc.
+   - Set up deployment protection (optional):
+     - Go to Settings > Git > Deployment Protection
+     - Enable "Require password for deployment" if needed
+   - Configure deployment notifications:
+     - Go to Settings > Notifications
+     - Enable email notifications for deployment status
+   - Set up deployment checks:
+     - Go to Settings > Git > Deployment Protection
+     - Enable "Require passing checks before deploying"
+
+4. **GitHub Integration:**
+   - Ensure your repository has branch protection rules:
+     - Go to GitHub repository > Settings > Branches
+     - Add rule for `main` branch:
+       - Require pull request reviews before merging
+       - Require status checks to pass before merging
+       - Include administrators in these restrictions
+   - Set up GitHub Actions (optional) for additional checks:
+     ```yaml
+     # .github/workflows/ci.yml
+     name: CI
+     on:
+       push:
+         branches: [ main, develop ]
+       pull_request:
+         branches: [ main, develop ]
+     jobs:
+       build:
+         runs-on: ubuntu-latest
+         steps:
+           - uses: actions/checkout@v2
+           - uses: actions/setup-node@v2
+             with:
+               node-version: '18'
+           - run: npm ci
+           - run: npm run build
+           - run: npm run lint
+     ```
+
+5. **Post-deployment:**
+   - Run database migrations on the production database
+   - Verify all API routes are working
+   - Test authentication flows
+   - Monitor error logs in Vercel dashboard
+
+## User Roles & Access
+
+- **Visitor:** Can search for documents, must log in to claim
+- **User:** Can claim documents, view claimed docs, report disputes
+- **Poster:** Can upload found documents and manage uploads
+- **Kiosk Manager:** Manages kiosk inventory and document handover
+- **Admin:** Approves posters/kiosks, manages users, views analytics
+
+## Development Guidelines
+
+1. **Code Style:**
+   - Follow TypeScript best practices
+   - Use ESLint for code linting
+   - Write meaningful commit messages
+
+2. **Testing:**
+   - Test all API routes
+   - Verify role-based access
+   - Check mobile responsiveness
+
+3. **Security:**
+   - Never commit sensitive data
+   - Use environment variables for secrets
+   - Implement proper authentication checks
 
 ## Troubleshooting
-- If you see errors about `nodemailer` or `tls`, ensure you are not using email sign-in, or set the API route runtime to `nodejs`.
 
----
+- If you see errors about `nodemailer` or `tls`, ensure email settings are correct
+- For database connection issues, verify your DATABASE_URL
+- If authentication fails, check your OAuth credentials
 
-For more, see the code comments and each dashboard page.
+## Contributing
 
-## Learn More
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
->>>>>>> github/main
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -25,7 +25,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { z } from 'zod';
 import WebNavigation from '@/components/WebNavigation';
 
@@ -37,10 +37,11 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+// Client component that uses useSearchParams
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = searchParams?.get('callbackUrl') || '/';
 
   const [form, setForm] = useState<LoginForm>({
     email: '',
@@ -113,36 +114,6 @@ export default function LoginPage() {
   };
 
   return (
-    <Box sx={{ pb: { xs: 7, sm: 0 }, bgcolor: 'background.default', minHeight: '100vh' }}>
-      <Box sx={{ background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', minHeight: '100vh' }}>
-        <Container maxWidth="lg" sx={{ py: 6 }}>
-          {/* Navigation Header */}
-          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
-            <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Image 
-                  src="/nipeID.png" 
-                  alt="Nipe ID Logo" 
-                  width={80} 
-                  height={80}
-                  style={{ objectFit: 'contain' }}
-                />
-                <Typography variant="h4" sx={{ color: '#059669', fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
-                  Nipe ID
-                </Typography>
-              </Box>
-            </Link>
-            <WebNavigation />
-          </Box>
-
-          {/* Login Form */}
-          <Container maxWidth="sm">
-            <Card elevation={3} sx={{ borderRadius: 2 }}>
-              <CardContent sx={{ p: 4 }}>
-                <Typography variant="h4" sx={{ mb: 4, textAlign: 'center', color: '#059669', fontWeight: 700 }}>
-                  Sign In
-                </Typography>
-
                 <form onSubmit={handleSubmit}>
                   <Stack spacing={3}>
             <TextField
@@ -200,6 +171,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               variant="contained"
+          fullWidth
                       disabled={isSubmitting}
                       sx={{
                         py: 1.5,
@@ -209,24 +181,19 @@ export default function LoginPage() {
             >
                       {isSubmitting ? (
                         <>
-                          <CircularProgress size={24} sx={{ color: 'white', mr: 1 }} />
-                          Signing In...
+              <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+              Signing in...
                         </>
                       ) : (
                         'Sign In'
                       )}
             </Button>
 
-                    <Box sx={{ position: 'relative', my: 3 }}>
-                      <Divider>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', px: 2 }}>
-                          OR
-                        </Typography>
-                      </Divider>
-          </Box>
+        <Divider>or</Divider>
 
                     <Button
                       variant="outlined"
+          fullWidth
                       onClick={handleGoogleSignIn}
                       startIcon={<GoogleIcon />}
                       sx={{
@@ -235,21 +202,101 @@ export default function LoginPage() {
                         borderColor: '#059669',
                         '&:hover': {
                           borderColor: '#047857',
-                          bgcolor: 'rgba(5, 150, 105, 0.04)',
+              bgcolor: '#f0fdf4',
                         },
                       }}
                     >
                       Continue with Google
                     </Button>
 
-                    <Typography variant="body2" sx={{ textAlign: 'center' }}>
+        <Typography variant="body2" align="center" sx={{ mt: 2 }}>
                       Don't have an account?{' '}
                       <Link href="/signup" style={{ color: '#059669', textDecoration: 'none' }}>
-                        Sign up
+            Sign up here
                       </Link>
                     </Typography>
                   </Stack>
                 </form>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function LoginPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      // Redirect based on user role
+      const role = (session.user as any).role;
+      switch (role) {
+        case 'ADMIN':
+          router.push('/admin');
+          break;
+        case 'KIOSK_MANAGER':
+          router.push('/kiosk');
+          break;
+        case 'POSTER':
+          router.push('/poster');
+          break;
+        default:
+          // For regular users
+          router.push('/');
+          break;
+      }
+    }
+  }, [status, session, router]);
+  
+  // Show loading state while checking session
+  if (status === 'loading') {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        bgcolor: '#f0fdf4'
+      }}>
+        <CircularProgress size={60} sx={{ color: '#059669' }} />
+      </Box>
+    );
+  }
+  
+  // If user is not logged in, show login form
+  return (
+    <Box sx={{ pb: { xs: 7, sm: 0 }, bgcolor: 'background.default', minHeight: '100vh' }}>
+      <Box sx={{ background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', minHeight: '100vh' }}>
+        <Container maxWidth="lg" sx={{ py: 6 }}>
+          {/* Navigation Header */}
+          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center' }}>
+            <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Image 
+                  src="/nipeID.png" 
+                  alt="Nipe ID Logo" 
+                  width={80} 
+                  height={80}
+                  style={{ objectFit: 'contain' }}
+                />
+                <Typography variant="h4" sx={{ color: '#059669', fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
+                  Nipe ID
+                </Typography>
+              </Box>
+            </Link>
+            <WebNavigation />
+          </Box>
+
+          {/* Login Form */}
+          <Container maxWidth="sm">
+            <Card elevation={3} sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h4" sx={{ mb: 4, textAlign: 'center', color: '#059669', fontWeight: 700 }}>
+                  Sign In
+                </Typography>
+                <Suspense fallback={<CircularProgress />}>
+                  <LoginForm />
+                </Suspense>
         </CardContent>
       </Card>
           </Container>
@@ -257,4 +304,4 @@ export default function LoginPage() {
       </Box>
     </Box>
   );
-} 
+}

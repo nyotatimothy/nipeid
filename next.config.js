@@ -13,6 +13,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true
   },
+  images: {
+    domains: ['lh3.googleusercontent.com'],
+  },
   async headers() {
     return [
       {
@@ -26,8 +29,11 @@ const nextConfig = {
       }
     ]
   },
-  images: {
-    domains: ['lh3.googleusercontent.com'],
+  // Force dynamic rendering for API routes
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'nipeid-co8m710ri-nyotatimothys-projects.vercel.app']
+    }
   }
 };
 
