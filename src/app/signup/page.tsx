@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -24,6 +24,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { z } from 'zod';
 import WebNavigation from '@/components/WebNavigation';
 
@@ -53,6 +54,45 @@ type SignupForm = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  
+  // Redirect if user is already logged in
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      // Redirect based on user role
+      const role = (session.user as any).role;
+      switch (role) {
+        case 'ADMIN':
+          router.push('/admin');
+          break;
+        case 'KIOSK_MANAGER':
+          router.push('/kiosk');
+          break;
+        case 'POSTER':
+          router.push('/poster');
+          break;
+        default:
+          // For regular users
+          router.push('/');
+          break;
+      }
+    }
+  }, [status, session, router]);
+  
+  // Show loading state while checking session
+  if (status === 'loading') {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        bgcolor: '#f0fdf4'
+      }}>
+        <CircularProgress size={60} sx={{ color: '#059669' }} />
+      </Box>
+    );
+  }
   const [form, setForm] = useState<SignupForm>({
     name: '',
     email: '',
@@ -302,4 +342,4 @@ export default function SignupPage() {
       </Box>
     </Box>
   );
-} 
+}

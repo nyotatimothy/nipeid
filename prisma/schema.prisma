@@ -27,6 +27,7 @@ model User {
   DocumentStatusHistory               DocumentStatusHistory[]
   Notification                        Notification[]
   Kiosk                               Kiosk[]                 @relation("KioskManagers")
+  payments                            Payment[]
 }
 
 model Document {
@@ -47,6 +48,7 @@ model Document {
   poster          User?                   @relation("Document_posterIdToUser", fields: [posterId], references: [id])
   DocumentHistory DocumentStatusHistory[]
   Notification    Notification[]
+  payments        Payment[]
 }
 
 model Kiosk {
@@ -106,6 +108,44 @@ model ContactRequest {
   updatedAt      DateTime      @updatedAt
 }
 
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  documentId      String?
+  amount          Float
+  currency        String        @default("KES")
+  paymentMethod   PaymentMethod @default(MPESA)
+  status          PaymentStatus @default(PENDING)
+  mpesaRequestId  String?       @unique
+  mpesaCheckoutId String?       @unique
+  phoneNumber     String
+  description     String
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            User          @relation(fields: [userId], references: [id])
+  document        Document?     @relation(fields: [documentId], references: [id])
+  transactions    Transaction[]
+}
+
+model Transaction {
+  id              String            @id @default(cuid())
+  paymentId       String
+  mpesaRequestId  String?           @unique
+  mpesaCheckoutId String?           @unique
+  transactionType TransactionType
+  status          TransactionStatus @default(PENDING)
+  amount          Float
+  phoneNumber     String
+  description     String
+  metadata        Json?
+  errorCode       String?
+  errorMessage    String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  payment         Payment           @relation(fields: [paymentId], references: [id])
+}
+
 enum Role {
   USER
   KIOSK_MANAGER
@@ -135,4 +175,34 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   DELETED
+}
+
+enum PaymentMethod {
+  MPESA
+  CARD
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  EXPIRED
+}
+
+enum TransactionType {
+  STK_PUSH
+  C2B
+  B2C
+  B2B
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  TIMEOUT
+  CANCELLED
 }

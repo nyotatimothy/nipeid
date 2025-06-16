@@ -4,7 +4,8 @@ import {
   Home as HomeIcon,
   ContactSupport as ContactIcon,
   Info as InfoIcon,
-  Login as LoginIcon
+  Login as LoginIcon,
+  Payment as PaymentIcon
 } from '@mui/icons-material';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -48,11 +49,11 @@ export default function MobileNavigation() {
           href="/"
         />
         <BottomNavigationAction 
-          label="Contact" 
-          value="/contact" 
-          icon={<ContactIcon />} 
+          label="Payment" 
+          value="/test-payment" 
+          icon={<PaymentIcon />} 
           component={Link}
-          href="/contact"
+          href="/test-payment"
         />
         <BottomNavigationAction 
           label="About" 
@@ -60,6 +61,13 @@ export default function MobileNavigation() {
           icon={<InfoIcon />} 
           component={Link}
           href="/about"
+        />
+        <BottomNavigationAction 
+          label="Contact" 
+          value="/contact" 
+          icon={<ContactIcon />} 
+          component={Link}
+          href="/contact"
         />
         <BottomNavigationAction 
           label="Login" 
@@ -71,4 +79,4 @@ export default function MobileNavigation() {
       </BottomNavigation>
     </Paper>
   );
-} 
+}

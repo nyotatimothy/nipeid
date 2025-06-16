@@ -13,6 +13,11 @@ export async function middleware(request: NextRequest) {
     '/api/search-document',
     '/api/contact',
     '/api/contact-request',
+    '/api/test-simple',
+    '/api/test-payment',
+    '/api/test-payment-simple',
+    '/api/test-payment-status',
+    '/api/payments/webhook',
   ].includes(request.nextUrl.pathname);
 
   // Allow public routes and auth routes
