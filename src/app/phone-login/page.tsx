@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import {
   Box,
   Container,
@@ -44,7 +44,7 @@ const otpSchema = z.object({
 type PhoneForm = z.infer<typeof phoneSchema>;
 type OTPForm = z.infer<typeof otpSchema>;
 
-export default function PhoneLoginPage() {
+function PhoneLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams?.get('callbackUrl') || '/';
@@ -435,5 +435,13 @@ export default function PhoneLoginPage() {
         </Card>
       </Container>
     </>
+  );
+}
+
+export default function PhoneLoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PhoneLoginContent />
+    </Suspense>
   );
 } 
