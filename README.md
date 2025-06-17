@@ -253,3 +253,29 @@ For testing purposes, you can use the following sample accounts:
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Test Data for Lost Documents
+
+The database seed script (`prisma/seed.ts`) creates a variety of users, kiosks, and documents for testing. Notably:
+
+- **Regular Users:**
+  - `user1@nipeid.com` (password: `Patch3`)
+  - `user2@nipeid.com` (password: `user2@pass`)
+  - ... up to `user10@nipeid.com`
+- **Poster Users:**
+  - `poster1@nipeid.com` (password: `poster1@pass`)
+  - ... up to `poster5@nipeid.com`
+- **Kiosks:**
+  - 10 kiosks with locations like Nairobi CBD, Westlands, etc.
+
+### Lost Documents
+- 20+ random lost documents are created, assigned to kiosks and posters.
+- 10 additional lost documents are created for testing.
+- **Claimed Documents:**
+  - `user1@nipeid.com` is assigned 2 claimed documents (these will appear in their profile as claimed).
+- **Reported Documents:**
+  - `user2@nipeid.com` is assigned 2 reported documents (these will appear in their profile as reported).
+
+You can log in as these users to test the claimed/reported document features in the UI.
+
+---

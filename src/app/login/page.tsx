@@ -215,6 +215,13 @@ function LoginForm() {
             Sign up here
                       </Link>
                     </Typography>
+
+        <Typography variant="body2" align="center" sx={{ mt: 1 }}>
+          Or{' '}
+          <Link href="/phone-login" style={{ color: '#059669', textDecoration: 'none' }}>
+            login with phone number
+          </Link>
+        </Typography>
                   </Stack>
                 </form>
   );

@@ -135,50 +135,54 @@ export const authOptions = {
         // For social logins, ensure we have the latest role from the database
         if (account?.provider === 'google' || account?.provider === 'facebook') {
           try {
-            console.log('Getting latest user data for social login');
             const dbUser = await prisma.user.findUnique({
               where: { email: user.email }
             });
-            
             if (dbUser) {
-              console.log('User found in database, updating token');
-              token.id = dbUser.id;
               token.role = dbUser.role;
-              token.name = dbUser.name || user.name;
-              token.email = dbUser.email;
-              token.provider = account.provider;
-              token.providerId = dbUser.providerId;
-            } else {
-              console.log('User not found in database during JWT callback');
+              token.id = dbUser.id;
             }
           } catch (error) {
-            console.error('JWT callback error:', error);
-          } finally {
-            await prisma.$disconnect();
+            console.error('Error fetching user role:', error);
           }
         }
-        
-        console.log('JWT token created:', { 
+      }
+
+      // Handle phone authentication tokens
+      if (token.provider === 'phone') {
+        // Phone auth tokens already contain the necessary data
+        return token;
+      }
+
+      return token;
+    },
+    async session({ session, token }: any) {
+      if (token) {
+        console.log('Session callback for token:', { 
           id: token.id, 
           role: token.role, 
           provider: token.provider 
         });
-      }
-      return token;
-    },
-    async session({ session, token }: any) {
-      if (session.user) {
-        // Use token.id if available, otherwise fall back to token.sub
-        session.user.id = token.id || token.sub;
-        session.user.role = token.role || 'USER'; // Default to USER if no role is set
+        
+        session.user.id = token.id;
+        session.user.role = token.role;
         session.user.provider = token.provider;
         
-        console.log('Session created:', { 
-          id: session.user.id, 
-          role: session.user.role, 
-          provider: session.user.provider 
-        });
+        // Handle phone authentication
+        if (token.provider === 'phone') {
+          session.user.phone = token.phone;
+          // Phone users might not have email/name initially
+          session.user.email = token.email || null;
+          session.user.name = token.name || null;
+        }
       }
+      
+      console.log('Session created:', { 
+        id: session.user.id, 
+        role: session.user.role, 
+        provider: session.user.provider 
+      });
+      
       return session;
     },
   },

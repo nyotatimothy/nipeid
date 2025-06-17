@@ -70,6 +70,7 @@ import MobileNavigation from '@/components/MobileNavigation';
 import WebNavigation from '@/components/WebNavigation';
 import { useTranslation } from '@/utils/translations';
 import { Box as MuiBox } from '@mui/material';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Home() {
   const [documentNumber, setDocumentNumber] = useState("");
@@ -106,8 +107,9 @@ export default function Home() {
   const searchResultsRef = useRef<HTMLDivElement>(null);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [minSearchError, setMinSearchError] = useState<string | null>(null);
 
-  const { data: session } = useSession();
+  const { data: session, isAuthenticated, user } = useAuth();
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -179,6 +181,13 @@ export default function Home() {
   }, [searchPerformed]);
 
   const handleSearch = async () => {
+    if (documentNumber.trim().length < 4) {
+      setMinSearchError('Please enter at least 4 characters to search.');
+      setSearchResults([]);
+      setSearchPerformed(false);
+      return;
+    }
+    setMinSearchError(null);
     try {
       setIsSearching(true);
       setSearchError(null);
@@ -486,6 +495,11 @@ export default function Home() {
                                   At: {doc.kiosk.name}
                                 </Typography>
                               )}
+                              {doc.claimedAt && (
+                                <Typography variant="caption" color="text.secondary">
+                                  Claimed: {new Date(doc.claimedAt).toLocaleDateString()}
+                                </Typography>
+                              )}
                             </Box>
                           </Box>
                         ))}
@@ -565,9 +579,11 @@ export default function Home() {
                                   '& .MuiChip-label': { px: 1, fontSize: '0.75rem' }
                                 }}
                               />
-                              <Typography variant="caption" color="text.secondary">
-                                Reported: {new Date(doc.createdAt).toLocaleDateString()}
-                              </Typography>
+                              {doc.reportedAt && (
+                                <Typography variant="caption" color="text.secondary">
+                                  Reported: {new Date(doc.reportedAt).toLocaleDateString()}
+                                </Typography>
+                              )}
                             </Box>
                           </Box>
                         ))}
@@ -665,6 +681,8 @@ export default function Home() {
                   onChange={(e) => setDocumentNumber(e.target.value)}
                   variant="outlined"
                   placeholder="Enter document number, full name, or partial name"
+                  error={!!minSearchError}
+                  helperText={minSearchError}
                 />
                 <FormControl fullWidth>
                   <InputLabel>{t('home.searchForm.documentType')}</InputLabel>

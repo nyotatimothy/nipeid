@@ -28,6 +28,8 @@ model User {
   Notification                        Notification[]
   Kiosk                               Kiosk[]                 @relation("KioskManagers")
   payments                            Payment[]
+  contactRequests                     ContactRequest[]
+  otps                                OTP[]
 }
 
 model Document {
@@ -36,6 +38,7 @@ model Document {
   documentType    DocumentType
   firstName       String?
   lastName        String?
+  dateOfBirth     DateTime
   status          DocumentStatus          @default(UPLOADED)
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @updatedAt
@@ -55,6 +58,7 @@ model Kiosk {
   id        String     @id @default(cuid())
   name      String
   location  String
+  phone     String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   Document  Document[]
@@ -106,6 +110,8 @@ model ContactRequest {
   message        String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id])
 }
 
 model Payment {
@@ -144,6 +150,17 @@ model Transaction {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   payment         Payment           @relation(fields: [paymentId], references: [id])
+}
+
+model OTP {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
 }
 
 enum Role {

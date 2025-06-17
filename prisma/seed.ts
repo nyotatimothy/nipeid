@@ -3,8 +3,36 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
+const locations = [
+  'Nairobi', 'Mombasa', 'Kisumu', 'Eldoret', 'Thika',
+  'Machakos', 'Nakuru', 'Naivasha', 'Kitale', 'Garissa'
+];
+const districts = [
+  'Central', 'Eastern', 'Western', 'Nyanza', 'Rift Valley',
+  'Coast', 'Nairobi', 'North Eastern', 'Upper Eastern', 'Lower Eastern'
+];
+const divisions = [
+  'Division A', 'Division B', 'Division C', 'Division D', 'Division E'
+];
+const subLocations = [
+  'SubLoc 1', 'SubLoc 2', 'SubLoc 3', 'SubLoc 4', 'SubLoc 5'
+];
+const conditions = ['GOOD', 'MEDIUM', 'BAD'];
+
 function randomFrom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randomDateOfBirth() {
+  const start = new Date(1970, 0, 1).getTime();
+  const end = new Date(2005, 0, 1).getTime();
+  return new Date(start + Math.random() * (end - start));
+}
+
+function randomDateFound() {
+  const start = new Date(2020, 0, 1).getTime();
+  const end = Date.now();
+  return new Date(start + Math.random() * (end - start));
 }
 
 async function main() {
@@ -94,6 +122,7 @@ async function main() {
         id: `kiosk-id-${i + 1}`,
         name: `Kiosk ${i + 1}`,
         location: kioskLocations[i],
+        phone: `0700${String(100000 + i).slice(0,6)}`
       },
     });
     kiosks.push(kiosk);
@@ -129,6 +158,82 @@ async function main() {
         status,
         kioskId: kiosk.id,
         posterId: poster.id,
+        dateOfBirth: randomDateOfBirth(),
+      },
+    });
+  }
+
+  // Add 10 more lost documents for testing
+  for (let i = 0; i < 10; i++) {
+    const firstName = randomFrom(firstNames);
+    const lastName = randomFrom(lastNames);
+    const documentType = randomFrom(docTypes);
+    const status = DocumentStatus.UPLOADED;
+    const kiosk = randomFrom(kiosks);
+    const poster = randomFrom(posterUsers);
+    const documentNumber = `${documentType.substring(0,2).toUpperCase()}${Math.floor(200000 + Math.random() * 800000)}`;
+    await prisma.document.create({
+      data: {
+        firstName,
+        lastName,
+        documentNumber,
+        documentType,
+        status,
+        kioskId: kiosk.id,
+        posterId: poster.id,
+        dateOfBirth: randomDateOfBirth(),
+      },
+    });
+  }
+
+  // Assign claimed and reported documents to at least 2 users
+  const testUser1 = regularUsers[0];
+  const testUser2 = regularUsers[1];
+  // Create 2 documents claimed by testUser1
+  for (let i = 0; i < 2; i++) {
+    const firstName = randomFrom(firstNames);
+    const lastName = randomFrom(lastNames);
+    const documentType = randomFrom(docTypes);
+    const kiosk = randomFrom(kiosks);
+    const poster = randomFrom(posterUsers);
+    const documentNumber = `${documentType.substring(0,2).toUpperCase()}${Math.floor(300000 + Math.random() * 700000)}`;
+    const doc = await prisma.document.create({
+      data: {
+        firstName,
+        lastName,
+        documentNumber,
+        documentType,
+        status: DocumentStatus.CLAIMED,
+        kioskId: kiosk.id,
+        posterId: poster.id,
+        dateOfBirth: randomDateOfBirth(),
+      },
+    });
+    await prisma.documentStatusHistory.create({
+      data: {
+        document: { connect: { id: doc.id } },
+        user: { connect: { id: testUser1.id } },
+        status: 'CLAIMED',
+      },
+    });
+  }
+  // Create 2 documents reported by testUser2
+  for (let i = 0; i < 2; i++) {
+    const firstName = randomFrom(firstNames);
+    const lastName = randomFrom(lastNames);
+    const documentType = randomFrom(docTypes);
+    const kiosk = randomFrom(kiosks);
+    const documentNumber = `${documentType.substring(0,2).toUpperCase()}${Math.floor(400000 + Math.random() * 600000)}`;
+    await prisma.document.create({
+      data: {
+        firstName,
+        lastName,
+        documentNumber,
+        documentType,
+        status: DocumentStatus.UPLOADED,
+        kioskId: kiosk.id,
+        posterId: testUser2.id,
+        dateOfBirth: randomDateOfBirth(),
       },
     });
   }
