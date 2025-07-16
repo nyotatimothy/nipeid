@@ -1,0 +1,24 @@
+# fly.toml app configuration file generated for nipeid-lnl-1w on 2025-07-16T11:59:59+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'nipeid-lnl-1w'
+primary_region = 'jnb'
+
+[build]
+
+[deploy]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
