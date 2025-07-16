@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nipe ID - Antler Pitch Deck - Complete Document</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Document-specific styles for PDF printing */
+        body {
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        
+        .document-header {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .document-header h1 {
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .document-header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin: 3rem 0;
+            padding: 2rem 0;
+        }
+        
+        .section h2 {
+            border-bottom: 3px solid #3182ce;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .problem-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .solution-benefits {
+            background: #f7fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        
+        .market-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .revenue-table {
+            width: 100%;
+            margin: 2rem 0;
+            border-collapse: collapse;
+        }
+        
+        .revenue-table th,
+        .revenue-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .revenue-table th {
+            background: #3182ce;
+            color: white;
+        }
+        
+        .traction-checklist {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .team-profile {
+            background: #f7fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        
+        .funding-breakdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .milestone-timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .impact-vision {
+            background: #3182ce;
+            color: white;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+        
+        .impact-vision h3 {
+            color: white;
+        }
+        
+        @media print {
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            .section:nth-child(odd) {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="document-header">
+            <h1>📱 Nipe ID</h1>
+            <p class="subtitle">Solving Africa's Lost Document Crisis Through Digital Innovation</p>
+            <p class="text-lg mt-3">Antler Investment Pitch • January 2025</p>
+        </div>
+
+        <!-- Problem Section -->
+        <div class="section">
+            <h2>🚨 The Problem: Lost Documents Lock Out Millions</h2>
+            
+            <div class="quote">
+                "Every day in Kenya, over 1,000 people lose their National ID. For many, this isn't just an inconvenience—it's a barrier to accessing basic services, employment, and dignity."
+            </div>
+
+            <div class="problem-stats">
+                <div class="metric">
+                    <span class="metric-number">50M+</span>
+                    <span class="metric-label">Kenyans depend on physical documents</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">365K+</span>
+                    <span class="metric-label">Documents lost annually</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">3-6 months</span>
+                    <span class="metric-label">Current recovery time</span>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>The Current Reality</h3>
+                <ul class="bullet-points">
+                    <li><strong>Lost documents = Lost opportunities:</strong> Can't open bank accounts, get jobs, access healthcare</li>
+                    <li><strong>Bureaucratic nightmare:</strong> Multiple government visits, lengthy processes</li>
+                    <li><strong>High costs:</strong> KES 2,000+ in fees, transport, and lost productivity</li>
+                    <li><strong>No centralized system:</strong> No way to track or recover found documents</li>
+                    <li><strong>Rural disadvantage:</strong> Limited access to government offices</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4 class="primary-color">Economic Impact</h4>
+                <p>The cost extends far beyond individual inconvenience. Kenya loses approximately <strong>$6.8 million annually</strong> in direct recovery costs, with broader economic impacts reaching <strong>$15M annually</strong> including lost productivity and opportunity costs. This affects:</p>
+                <ul class="bullet-points">
+                    <li>Financial inclusion (can't access banking services)</li>
+                    <li>Employment opportunities (can't prove identity)</li>
+                    <li>Healthcare access (limited service eligibility)</li>
+                    <li>Digital services (can't register for mobile money, internet services)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Solution Section -->
+        <div class="section">
+            <h2>💡 Our Solution: Digital Document Recovery Platform</h2>
+            
+            <div class="quote">
+                "A digital platform that turns document recovery from months to minutes."
+            </div>
+
+            <h3>How Nipe ID Works</h3>
+            <div class="solution-benefits">
+                <div class="grid-5">
+                    <div class="text-center">
+                        <div class="emoji" style="font-size: 2rem;">📄</div>
+                        <h4>1. Document Found</h4>
+                        <p class="text-sm">Kiosk agent uploads to secure platform</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="emoji" style="font-size: 2rem;">🤖</div>
+                        <h4>2. AI Matching</h4>
+                        <p class="text-sm">System identifies potential owners</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="emoji" style="font-size: 2rem;">📱</div>
+                        <h4>3. SMS Alert</h4>
+                        <p class="text-sm">Real-time notifications sent</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="emoji" style="font-size: 2rem;">🔐</div>
+                        <h4>4. Verification</h4>
+                        <p class="text-sm">Multi-factor authentication</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="emoji" style="font-size: 2rem;">✅</div>
+                        <h4>5. Collection</h4>
+                        <p class="text-sm">Quick pickup at nearest kiosk</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Key Features & Differentiators</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4 class="accent-color">Technology Infrastructure</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Kiosk Network Integration:</strong> M-Pesa agents, shops, government offices</li>
+                        <li><strong>SMS Verification System:</strong> No smartphone required</li>
+                        <li><strong>Advanced Search & Matching:</strong> AI-powered algorithms</li>
+                        <li><strong>Cloud-based Platform:</strong> Scalable and secure</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 class="accent-color">User Experience</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Privacy-First Design:</strong> Data encryption and protection</li>
+                        <li><strong>Multi-Language Support:</strong> Swahili, English, local languages</li>
+                        <li><strong>Mobile-Responsive:</strong> Works on feature phones</li>
+                        <li><strong>Government-Friendly:</strong> Enhancement, not replacement</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="status status-success text-center">
+                ✅ Complete platform already built, tested, and production-ready
+            </div>
+        </div>
+
+        <!-- Market Opportunity Section -->
+        <div class="section">
+            <h2>📊 Market Opportunity</h2>
+
+            <div class="market-breakdown">
+                <div class="card">
+                    <h3 class="primary-color">Immediate Market (Kenya)</h3>
+                    <ul class="bullet-points">
+                        <li><strong>50M+ citizens</strong> requiring official documents</li>
+                        <li><strong>365K+ documents</strong> lost annually (conservative estimate)</li>
+                        <li><strong>15K+ kiosks</strong> potential network partners</li>
+                        <li><strong>$6.8M annually</strong> in direct recovery costs and lost productivity</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="primary-color">Regional Expansion (East Africa)</h3>
+                    <ul class="bullet-points">
+                        <li><strong>200M+ population</strong> across Kenya, Uganda, Tanzania, Rwanda</li>
+                        <li><strong>Similar document systems</strong> and challenges</li>
+                        <li><strong>Growing mobile money penetration</strong> (ideal payment infrastructure)</li>
+                        <li><strong>Government digitization</strong> initiatives accelerating</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Global Opportunity</h3>
+                <p>This is a global problem affecting <strong>2.5 billion people</strong> in emerging markets who face similar document recovery challenges. Digital identity is becoming critical for financial inclusion, and government digitization is accelerating post-COVID.</p>
+            </div>
+
+            <div class="quote">
+                "We're starting with Kenya's 50 million citizens, but this is a global problem affecting billions."
+            </div>
+        </div>
+
+        <!-- Business Model Section -->
+        <div class="section">
+            <h2>💰 Business Model & Revenue Streams</h2>
+
+            <h3>Three-Phase Revenue Strategy</h3>
+            <div class="grid-3">
+                <div class="phase-card">
+                    <h4 class="primary-color">Phase 1: Commission-Based (Launch)</h4>
+                    <ul class="bullet-points">
+                        <li><strong>KES 200-500</strong> per successful recovery</li>
+                        <li><strong>60/40 split</strong> with kiosk partners</li>
+                        <li><strong>Volume scaling:</strong> 1,000 recoveries/month = KES 200K-500K revenue</li>
+                        <li><strong>10-25%</strong> of traditional recovery cost</li>
+                    </ul>
+                </div>
+                <div class="phase-card">
+                    <h4 class="primary-color">Phase 2: Subscription Model (Scale)</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Kiosk subscriptions:</strong> KES 2,000/month for premium features</li>
+                        <li><strong>Enterprise partnerships:</strong> Government and institutional packages</li>
+                        <li><strong>Data insights:</strong> Anonymized analytics for policy makers</li>
+                        <li><strong>SaaS model</strong> for recurring revenue</li>
+                    </ul>
+                </div>
+                <div class="phase-card">
+                    <h4 class="primary-color">Phase 3: Platform Expansion (Growth)</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Additional document types:</strong> Birth certificates, diplomas, licenses</li>
+                        <li><strong>Insurance partnerships:</strong> Document protection services</li>
+                        <li><strong>Cross-border expansion:</strong> Regional document recovery network</li>
+                        <li><strong>Platform fees</strong> and transaction volume</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Unit Economics</h3>
+            <table class="revenue-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Customer Acquisition Cost (CAC)</strong></td>
+                        <td>KES 100</td>
+                        <td>SMS marketing, word-of-mouth</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Average Recovery Value</strong></td>
+                        <td>KES 350</td>
+                        <td>Platform commission per successful recovery</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gross Margin</strong></td>
+                        <td>70%+</td>
+                        <td>Digital-first platform with low marginal costs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Break-even Point</strong></td>
+                        <td>1,500 recoveries/month</td>
+                        <td>Covering operational costs and team salaries</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Traction Section -->
+        <div class="section">
+            <h2>🚀 Traction & Progress</h2>
+
+            <div class="traction-checklist">
+                <div class="card">
+                    <h3 class="accent-color">✅ Technical Development</h3>
+                    <ul class="bullet-points">
+                        <li>Full-stack platform built and deployed</li>
+                        <li>SMS integration with Africa's Talking (production-ready)</li>
+                        <li>Kiosk management system with verification workflows</li>
+                        <li>Admin dashboard for oversight and analytics</li>
+                        <li>Mobile-responsive design for feature phone compatibility</li>
+                        <li>M-Pesa payment integration completed</li>
+                        <li>Database and audit trail systems operational</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="accent-color">🎯 Market Validation</h3>
+                    <ul class="bullet-points">
+                        <li>Partnership discussions with 3 major kiosk chains</li>
+                        <li>Government stakeholder meetings initiated</li>
+                        <li>Beta testing with 5 kiosks planned for Q1 2025</li>
+                        <li>User interviews completed with 50+ document loss victims</li>
+                        <li>Technical infrastructure validated and tested</li>
+                        <li>Regulatory compliance research completed</li>
+                        <li>Business model validated through market research</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Technology Stack (Production-Ready)</h3>
+                <div class="grid-4">
+                    <div>
+                        <strong>Frontend:</strong><br>
+                        Next.js, React, TypeScript
+                    </div>
+                    <div>
+                        <strong>Backend:</strong><br>
+                        Node.js, PostgreSQL, Prisma
+                    </div>
+                    <div>
+                        <strong>Infrastructure:</strong><br>
+                        Cloud deployment, SMS API, Payment API
+                    </div>
+                    <div>
+                        <strong>Security:</strong><br>
+                        Encryption, Auth, Audit trails
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Why Now Section -->
+        <div class="section">
+            <h2>⏰ Why Now? Perfect Storm of Opportunity</h2>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3 class="primary-color">🌟 Infrastructure Ready</h3>
+                    <ul class="bullet-points">
+                        <li><strong>Mobile money adoption:</strong> 96% of adults use M-Pesa</li>
+                        <li><strong>SMS penetration:</strong> 99%+ coverage even in rural areas</li>
+                        <li><strong>Cloud infrastructure:</strong> Cost-effective scaling possible</li>
+                        <li><strong>Kiosk networks:</strong> Established and widespread</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="primary-color">📈 Policy & Market Alignment</h3>
+                    <ul class="bullet-points">
+                        <li><strong>Kenya's Digital Economy Blueprint:</strong> Prioritizing identity solutions</li>
+                        <li><strong>Huduma Number rollout:</strong> Digital identity awareness</li>
+                        <li><strong>World Bank funding:</strong> $100M for digital ID initiatives</li>
+                        <li><strong>Post-COVID acceleration:</strong> Digital-first services norm</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3 class="primary-color">🏛️ Regulatory Environment</h3>
+                    <ul class="bullet-points">
+                        <li><strong>Data Protection Act:</strong> Framework for secure handling</li>
+                        <li><strong>Public-private partnerships:</strong> Encouraged for citizen services</li>
+                        <li><strong>Startup-friendly policies:</strong> Support systems in place</li>
+                        <li><strong>Government efficiency:</strong> Pressure to modernize services</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="primary-color">💡 Technology Maturity</h3>
+                    <ul class="bullet-points">
+                        <li><strong>AI/ML capabilities:</strong> Document recognition and matching</li>
+                        <li><strong>Mobile-first development:</strong> Optimized for African context</li>
+                        <li><strong>API ecosystems:</strong> SMS, payments, government integrations</li>
+                        <li><strong>Security frameworks:</strong> Blockchain-ready infrastructure</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="quote">
+                "The infrastructure, regulatory environment, and market need have never been more aligned."
+            </div>
+        </div>
+
+        <!-- Team Section -->
+        <div class="section">
+            <h2>👥 Team & Competitive Advantages</h2>
+
+            <div class="team-profile">
+                <h3 class="primary-color">Timothy Nyota - Technical Founder</h3>
+                <div class="grid-2">
+                    <div>
+                        <h4>Experience & Skills</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Full-stack developer</strong> with production-ready platform delivered</li>
+                            <li><strong>Deep understanding</strong> of Kenyan digital infrastructure</li>
+                            <li><strong>Systems thinking</strong> approach to complex identity challenges</li>
+                            <li><strong>Proven execution</strong> with integrated SMS, payments, and kiosk systems</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Technical Achievements</h4>
+                        <ul class="bullet-points">
+                            <li>Built entire platform from conception to production</li>
+                            <li>Integrated with Kenya's payment and SMS ecosystems</li>
+                            <li>Designed scalable architecture for rapid expansion</li>
+                            <li>Implemented comprehensive security and privacy measures</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Our Competitive Advantages</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4 class="accent-color">Technical & Execution</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Technical expertise</strong> in Kenya's payment and SMS ecosystems</li>
+                        <li><strong>User-centric design</strong> accounting for low-smartphone penetration</li>
+                        <li><strong>Scalable architecture</strong> built for rapid expansion</li>
+                        <li><strong>Production-ready platform</strong> with proven integrations</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 class="accent-color">Market & Strategy</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Local market knowledge</strong> with global ambitions</li>
+                        <li><strong>Government-friendly approach</strong> (enhancement vs. replacement)</li>
+                        <li><strong>First-mover advantage</strong> in digital document recovery</li>
+                        <li><strong>Partnership-ready</strong> with existing infrastructure</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Advisory Network (To Be Recruited)</h4>
+                <div class="grid-3">
+                    <div>
+                        <strong>Government Relations Expert</strong><br>
+                        <span class="text-sm">Navigate regulatory landscape and partnerships</span>
+                    </div>
+                    <div>
+                        <strong>Kiosk Industry Veteran</strong><br>
+                        <span class="text-sm">Accelerate partnership pipeline development</span>
+                    </div>
+                    <div>
+                        <strong>Digital Identity Specialist</strong><br>
+                        <span class="text-sm">Guide product development and security</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Antler Partnership Section -->
+        <div class="section">
+            <h2>🤝 The Antler Partnership Opportunity</h2>
+
+            <div class="highlight-box">
+                <h3 class="text-center">Raising $100K - $250K Seed Funding</h3>
+            </div>
+
+            <h3>Use of Funds</h3>
+            <div class="funding-breakdown">
+                <div class="metric">
+                    <span class="metric-number">40%</span>
+                    <span class="metric-label">Market Entry & Kiosk Partnerships</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">30%</span>
+                    <span class="metric-label">Product Development & Security</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">20%</span>
+                    <span class="metric-label">Team Expansion</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">10%</span>
+                    <span class="metric-label">Regulatory Compliance</span>
+                </div>
+            </div>
+
+            <h3>How Antler Accelerates Our Success</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4 class="primary-color">Capital & Network</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Market entry funding:</strong> Kiosk partner incentives and onboarding</li>
+                        <li><strong>Infrastructure scaling:</strong> SMS and cloud infrastructure for nationwide reach</li>
+                        <li><strong>Government connections:</strong> Stakeholder introductions and regulatory guidance</li>
+                        <li><strong>Fintech expertise:</strong> Access to digital identity and payments mentors</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 class="primary-color">Growth & Strategy</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Go-to-market support:</strong> Partnership development in payments ecosystem</li>
+                        <li><strong>Regional expansion:</strong> Support for East African market entry</li>
+                        <li><strong>Series A preparation:</strong> Positioning for follow-on investment</li>
+                        <li><strong>Ecosystem access:</strong> Portfolio company synergies and collaborations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>12-Month Milestones with Antler</h3>
+            <div class="milestone-timeline">
+                <div class="milestone">
+                    <h4 class="primary-color">Q1 2025</h4>
+                    <ul class="text-sm">
+                        <li>10 kiosk partners</li>
+                        <li>100 recoveries</li>
+                        <li>Platform optimization</li>
+                        <li>Team expansion</li>
+                    </ul>
+                </div>
+                <div class="milestone">
+                    <h4 class="primary-color">Q2 2025</h4>
+                    <ul class="text-sm">
+                        <li>50 kiosk partners</li>
+                        <li>1,000 recoveries</li>
+                        <li>Government pilot</li>
+                        <li>Market validation</li>
+                    </ul>
+                </div>
+                <div class="milestone">
+                    <h4 class="primary-color">Q3 2025</h4>
+                    <ul class="text-sm">
+                        <li>Government partnership</li>
+                        <li>5,000 recoveries</li>
+                        <li>Regional planning</li>
+                        <li>Product expansion</li>
+                    </ul>
+                </div>
+                <div class="milestone">
+                    <h4 class="primary-color">Q4 2025</h4>
+                    <ul class="text-sm">
+                        <li>Series A ready</li>
+                        <li>Regional expansion</li>
+                        <li>10,000+ recoveries</li>
+                        <li>Platform scaling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vision & Impact Section -->
+        <div class="section">
+            <div class="impact-vision">
+                <h2>🎯 Our Vision: Building Africa's Digital Infrastructure</h2>
+                
+                <div class="quote" style="background: rgba(255,255,255,0.1); border-left-color: white; color: white; margin: 2rem 0;">
+                    "Today, losing your ID means losing access to modern life.<br>
+                    Tomorrow, with Nipe ID, it means getting a text message."
+                </div>
+
+                <div class="grid-2 mt-4">
+                    <div>
+                        <h3 style="color: white;">💫 Impact We're Creating</h3>
+                        <ul class="bullet-points" style="color: white;">
+                            <li><strong>Millions of citizens</strong> with faster, cheaper document recovery</li>
+                            <li><strong>Thousands of kiosks</strong> with new revenue streams</li>
+                            <li><strong>Government efficiency</strong> through digital transformation</li>
+                            <li><strong>Financial inclusion</strong> by removing document barriers</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: white;">🚀 Ready for Scale</h3>
+                        <ul class="bullet-points" style="color: white;">
+                            <li><strong>Platform built</strong> and production-ready</li>
+                            <li><strong>Market validated</strong> through comprehensive research</li>
+                            <li><strong>Partnerships ready</strong> for immediate activation</li>
+                            <li><strong>Team committed</strong> to execution and growth</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <h3 class="primary-color">The Ask</h3>
+                <p class="text-xl"><strong>Join us in building Africa's document recovery infrastructure. Help us turn a months-long nightmare into a minutes-long solution.</strong></p>
+                
+                <div class="grid-3 mt-3">
+                    <div>
+                        <strong class="primary-color">Contact:</strong><br>
+                        timothy@nipeid.com
+                    </div>
+                    <div>
+                        <strong class="primary-color">Demo:</strong><br>
+                        Available immediately
+                    </div>
+                    <div>
+                        <strong class="primary-color">Next Steps:</strong><br>
+                        Partnership discussions & pilot planning
+                    </div>
+                </div>
+            </div>
+
+            <div class="quote mt-4">
+                "This isn't just a startup—it's infrastructure for the digital economy."
+            </div>
+        </div>
+    </div>
+</body>
+</html>

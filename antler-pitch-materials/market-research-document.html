@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nipe ID - Market Research & Supporting Data</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Research document specific styles */
+        .research-section {
+            background: #f7fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border-left: 4px solid #3182ce;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .data-point {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        
+        .data-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3182ce;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .data-label {
+            font-size: 0.9rem;
+            color: #718096;
+            line-height: 1.4;
+        }
+        
+        .calculation-box {
+            background: #edf2f7;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border: 1px solid #cbd5e0;
+        }
+        
+        .assumption-list {
+            background: #fef5e7;
+            border: 1px solid #ed8936;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .validation-needed {
+            background: #fed7d7;
+            border: 1px solid #e53e3e;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .expansion-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .country-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #38a169;
+        }
+        
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .timeline-item {
+            background: #f0fff4;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-top: 3px solid #38a169;
+            text-align: center;
+        }
+        
+        .source-note {
+            font-size: 0.85rem;
+            color: #718096;
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="document-header">
+            <h1>📊 Nipe ID - Market Research</h1>
+            <p class="subtitle">Supporting Data & Analysis for Antler Pitch</p>
+            <p class="text-lg mt-3">Comprehensive Market Validation & Opportunity Assessment</p>
+        </div>
+
+        <!-- Market Size Calculations -->
+        <div class="section">
+            <h2>📈 Market Size Calculations & Validation</h2>
+            
+            <div class="research-section">
+                <h3 class="primary-color mb-3">Kenya Document Loss Estimates</h3>
+                
+                <div class="calculation-box">
+                    <h4 class="mb-3">Conservative Market Calculation:</h4>
+                    <div class="data-grid">
+                        <div class="data-point">
+                            <span class="data-number">54.4M</span>
+                            <span class="data-label">Total Population (2023 census)</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">30M</span>
+                            <span class="data-label">Adult Population (18+)</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">1.2%</span>
+                            <span class="data-label">Annual ID Replacement Rate</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">360K+</span>
+                            <span class="data-label">Estimated Annual Losses</span>
+                        </div>
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <h4>Market Value Calculation</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Average recovery cost:</strong> KES 2,500 (government fees + transport + time)</li>
+                            <li><strong>Total market value:</strong> KES 900M (~$6.7M USD)</li>
+                            <li><strong>Our target fee:</strong> KES 300 (12% of traditional cost)</li>
+                            <li><strong>Addressable market:</strong> 10% capture = KES 10.8M annually</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="assumption-list">
+                    <h4 class="warning-color mb-2">⚠️ Market Size Assumption Update</h4>
+                    <p>Initial pitch used <strong>$73M market estimate</strong> which appears inflated. More realistic estimate: <strong>$6.7M-$15M annually</strong> based on:</p>
+                    <ul class="bullet-points">
+                        <li>Conservative 1.2% annual replacement rate</li>
+                        <li>KES 2,500 average recovery cost per person</li>
+                        <li>Time value and opportunity costs included</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Revenue Projections (Revised)</h3>
+            <div class="data-grid">
+                <div class="data-point">
+                    <span class="data-number">KES 300</span>
+                    <span class="data-label">Target Recovery Fee (12% of traditional cost)</span>
+                </div>
+                <div class="data-point">
+                    <span class="data-number">36K</span>
+                    <span class="data-label">Recoveries at 10% Market Capture</span>
+                </div>
+                <div class="data-point">
+                    <span class="data-number">KES 10.8M</span>
+                    <span class="data-label">Annual Revenue Potential (~$80K USD)</span>
+                </div>
+                <div class="data-point">
+                    <span class="data-number">~$400K</span>
+                    <span class="data-label">With Regional Expansion (5 countries)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kiosk Partner Landscape -->
+        <div class="section">
+            <h2>🏪 Kiosk Partner Ecosystem</h2>
+            
+            <div class="research-section">
+                <h3 class="primary-color mb-3">M-Pesa Agent Network Analysis</h3>
+                
+                <div class="data-grid">
+                    <div class="data-point">
+                        <span class="data-number">140K+</span>
+                        <span class="data-label">Total M-Pesa Agents in Kenya</span>
+                        <div class="source-note">Source: Safaricom 2023 data</div>
+                    </div>
+                    <div class="data-point">
+                        <span class="data-number">80K</span>
+                        <span class="data-label">Active Daily Agents</span>
+                    </div>
+                    <div class="data-point">
+                        <span class="data-number">95%</span>
+                        <span class="data-label">Rural Coverage (within 5km)</span>
+                    </div>
+                    <div class="data-point">
+                        <span class="data-number">150-300</span>
+                        <span class="data-label">Average Daily Transactions per Agent</span>
+                    </div>
+                </div>
+
+                <h4>Additional Partner Categories</h4>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4 class="accent-color">Banking Agents</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Equity Bank agents:</strong> 40,000+</li>
+                            <li><strong>Higher security profile</strong> for sensitive documents</li>
+                            <li><strong>Government trust</strong> and existing relationships</li>
+                            <li><strong>Rural penetration</strong> complementing M-Pesa</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4 class="accent-color">Government & Retail</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Huduma Centers:</strong> 52 locations (official channels)</li>
+                            <li><strong>Post Office branches:</strong> 600+ locations</li>
+                            <li><strong>Supermarket chains:</strong> 2,000+ (Naivas, Quickmart)</li>
+                            <li><strong>Pilot program potential</strong> for government validation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>Partnership Strategy Tiers</h4>
+                    <div class="grid-3">
+                        <div>
+                            <strong class="primary-color">Tier 1: M-Pesa Agents</strong><br>
+                            <span class="text-sm">Highest volume, lowest cost, fastest rollout</span>
+                        </div>
+                        <div>
+                            <strong class="primary-color">Tier 2: Bank Agents</strong><br>
+                            <span class="text-sm">Higher security, government trust, premium positioning</span>
+                        </div>
+                        <div>
+                            <strong class="primary-color">Tier 3: Government Centers</strong><br>
+                            <span class="text-sm">Official channels, pilot programs, regulatory validation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Infrastructure -->
+        <div class="section">
+            <h2>📱 Technology Infrastructure Analysis</h2>
+            
+            <div class="grid-2">
+                <div class="research-section">
+                    <h3 class="primary-color mb-3">Mobile & SMS Penetration</h3>
+                    <div class="data-grid">
+                        <div class="data-point">
+                            <span class="data-number">109.2%</span>
+                            <span class="data-label">Mobile Phone Penetration (multiple SIMs)</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">41.6%</span>
+                            <span class="data-label">Smartphone Penetration (2023)</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">98.5%</span>
+                            <span class="data-label">SMS Delivery Rate</span>
+                            <div class="source-note">Africa's Talking SLA</div>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">32.1M</span>
+                            <span class="data-label">Mobile Money Users (84% adults)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="research-section">
+                    <h3 class="primary-color mb-3">Internet & Digital Access</h3>
+                    <div class="data-grid">
+                        <div class="data-point">
+                            <span class="data-number">87.2%</span>
+                            <span class="data-label">Internet Penetration</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">47.7M</span>
+                            <span class="data-label">Mobile Internet Users</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">61.9%</span>
+                            <span class="data-label">Digital Literacy Rate</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">72%</span>
+                            <span class="data-label">Rural Connectivity (improving rapidly)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Technical Infrastructure Advantages</h4>
+                <ul class="bullet-points">
+                    <li><strong>SMS-first approach</strong> reaches 99%+ of population including feature phones</li>
+                    <li><strong>Mobile money integration</strong> provides payment infrastructure without banking</li>
+                    <li><strong>Low smartphone dependency</strong> ensures rural accessibility</li>
+                    <li><strong>Cloud infrastructure</strong> enables cost-effective scaling</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Government & Regulatory Environment -->
+        <div class="section">
+            <h2>🏛️ Government & Policy Landscape</h2>
+            
+            <div class="research-section">
+                <h3 class="primary-color mb-3">Digital Identity Initiatives</h3>
+                
+                <div class="data-grid">
+                    <div class="data-point">
+                        <span class="data-number">38M+</span>
+                        <span class="data-label">Huduma Number Registrations</span>
+                    </div>
+                    <div class="data-point">
+                        <span class="data-number">$100M</span>
+                        <span class="data-label">World Bank Digital ID Funding</span>
+                    </div>
+                    <div class="data-point">
+                        <span class="data-number">2019-2025</span>
+                        <span class="data-label">Digital Economy Blueprint Timeline</span>
+                    </div>
+                    <div class="data-point">
+                        <span class="data-number">1M+</span>
+                        <span class="data-label">Citizens in Digital Literacy Programs Annually</span>
+                    </div>
+                </div>
+
+                <h4>Regulatory Framework</h4>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4 class="accent-color">Enabling Policies</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Data Protection Act (2019):</strong> Compliance framework established</li>
+                            <li><strong>Public Private Partnership Act:</strong> Collaboration framework</li>
+                            <li><strong>National Payment System Regulations:</strong> Mobile money integration</li>
+                            <li><strong>Computer Misuse and Cybercrimes Act:</strong> Security requirements</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4 class="accent-color">Government Pain Points</h4>
+                        <ul class="bullet-points">
+                            <li><strong>ID replacement backlog:</strong> 3-6 month processing times</li>
+                            <li><strong>Rural service delivery:</strong> Limited physical presence</li>
+                            <li><strong>Digital transformation pressure:</strong> Modernize services</li>
+                            <li><strong>Cost efficiency:</strong> Budget pressures on manual processes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Economic Impact Analysis -->
+        <div class="section">
+            <h2>💰 Economic Impact Assessment</h2>
+            
+            <div class="grid-2">
+                <div class="research-section">
+                    <h3 class="primary-color mb-3">Individual Economic Impact</h3>
+                    <div class="calculation-box">
+                        <h4>Current Recovery Cost Breakdown:</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Time lost:</strong> 3-5 working days</li>
+                            <li><strong>Transport costs:</strong> KES 500-1,500 (rural areas)</li>
+                            <li><strong>Lost income opportunity:</strong> KES 1,500-3,000</li>
+                            <li><strong>Official fees:</strong> KES 1,000-2,000</li>
+                            <li><strong>Total individual cost:</strong> KES 3,000-6,500</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="research-section">
+                    <h3 class="primary-color mb-3">Societal Economic Impact</h3>
+                    <div class="data-grid">
+                        <div class="data-point">
+                            <span class="data-number">KES 1.3B</span>
+                            <span class="data-label">Annual Productivity Loss (~$9.7M USD)</span>
+                        </div>
+                        <div class="data-point">
+                            <span class="data-number">KES 400M</span>
+                            <span class="data-label">Government Processing Costs Annually</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Our Solution Impact</h3>
+                <div class="grid-4">
+                    <div class="metric">
+                        <span class="metric-number">90%</span>
+                        <span class="metric-label">Time Reduction (days to minutes)</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-number">80%</span>
+                        <span class="metric-label">Cost Reduction (KES 300 vs KES 2,500)</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-number">Rural/Urban</span>
+                        <span class="metric-label">Accessibility Parity</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-number">60%</span>
+                        <span class="metric-label">Government Processing Burden Reduction</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regional Expansion Opportunity -->
+        <div class="section">
+            <h2>🌍 Regional Expansion Analysis</h2>
+            
+            <div class="research-section">
+                <h3 class="primary-color mb-3">East African Community (EAC) Opportunity</h3>
+                
+                <div class="expansion-map">
+                    <div class="country-card">
+                        <h4 class="accent-color">Uganda</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Population:</strong> 48.6M</li>
+                            <li><strong>Similar ID challenges</strong></li>
+                            <li><strong>Mobile money:</strong> 65% penetration</li>
+                            <li><strong>Government digitization</strong> active</li>
+                        </ul>
+                    </div>
+                    <div class="country-card">
+                        <h4 class="accent-color">Tanzania</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Population:</strong> 62.1M</li>
+                            <li><strong>National ID program</strong> ongoing</li>
+                            <li><strong>Mobile money:</strong> 73% penetration</li>
+                            <li><strong>Strong kiosk networks</strong></li>
+                        </ul>
+                    </div>
+                    <div class="country-card">
+                        <h4 class="accent-color">Rwanda</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Population:</strong> 13.6M</li>
+                            <li><strong>Advanced digital infrastructure</strong></li>
+                            <li><strong>95% ID coverage</strong> target</li>
+                            <li><strong>Strong government partnerships</strong></li>
+                        </ul>
+                    </div>
+                    <div class="country-card">
+                        <h4 class="accent-color">Total EAC</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Total opportunity:</strong> 178M additional citizens</li>
+                            <li><strong>Similar systems</strong> and challenges</li>
+                            <li><strong>Mobile money infrastructure</strong></li>
+                            <li><strong>Regional integration</strong> trends</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4>Expansion Timeline</h4>
+                <div class="timeline-grid">
+                    <div class="timeline-item">
+                        <h4 class="accent-color">Year 1</h4>
+                        <p class="text-sm">Kenya market penetration and validation</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="accent-color">Year 2</h4>
+                        <p class="text-sm">Uganda pilot (similar systems and regulations)</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="accent-color">Year 3</h4>
+                        <p class="text-sm">Tanzania and Rwanda expansion</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 class="accent-color">Year 4</h4>
+                        <p class="text-sm">Regional platform integration and optimization</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Competition Analysis -->
+        <div class="section">
+            <h2>🎯 Competitive Landscape Analysis</h2>
+            
+            <div class="research-section">
+                <h3 class="primary-color mb-3">Current Competition Assessment</h3>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <h4 class="primary-color">Direct Competitors</h4>
+                        <div class="status status-info mb-2">Currently: None Identified</div>
+                        <ul class="bullet-points">
+                            <li>No existing digital document recovery platforms</li>
+                            <li>Government solutions focus on replacement, not recovery</li>
+                            <li>Informal networks exist but lack digital infrastructure</li>
+                            <li><strong>First-mover advantage</strong> in this space</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4 class="primary-color">Indirect Competitors</h4>
+                        <ul class="bullet-points">
+                            <li><strong>Government replacement services:</strong> Slow, expensive</li>
+                            <li><strong>Physical bulletin boards:</strong> Limited reach</li>
+                            <li><strong>Social media groups:</strong> Security concerns, limited coverage</li>
+                            <li><strong>Word-of-mouth networks:</strong> Inefficient, unreliable</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>Our Competitive Advantages</h4>
+                    <div class="grid-2">
+                        <div>
+                            <ul class="bullet-points">
+                                <li><strong>First mover advantage</strong> in digital document recovery</li>
+                                <li><strong>Technical infrastructure</strong> already built and tested</li>
+                                <li><strong>Partnership-ready</strong> with existing kiosk networks</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul class="bullet-points">
+                                <li><strong>Government-friendly approach</strong> (enhancement, not replacement)</li>
+                                <li><strong>SMS-first design</strong> for maximum accessibility</li>
+                                <li><strong>Proven execution</strong> with production-ready platform</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Assumptions & Validation Needed -->
+        <div class="section">
+            <h2>⚠️ Key Assumptions & Validation Requirements</h2>
+            
+            <div class="validation-needed">
+                <h3 class="danger-color mb-3">Critical Assumptions to Validate</h3>
+                
+                <div class="grid-2">
+                    <div>
+                        <h4>Market Assumptions</h4>
+                        <ul class="bullet-points">
+                            <li><strong>365K annual document losses</strong> (needs government data validation)</li>
+                            <li><strong>KES 300 recovery fee acceptance</strong> (user research required)</li>
+                            <li><strong>10% market capture feasibility</strong> (competitive analysis needed)</li>
+                            <li><strong>Kiosk partner enthusiasm</strong> (pilot programs will validate)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Technical Assumptions</h4>
+                        <ul class="bullet-points">
+                            <li><strong>SMS delivery reliability</strong> in rural areas (98.5% SLA)</li>
+                            <li><strong>Kiosk agent technical capability</strong> (training may be needed)</li>
+                            <li><strong>Document verification accuracy</strong> (AI/ML performance)</li>
+                            <li><strong>Scale infrastructure costs</strong> (optimization required)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="assumption-list">
+                <h3 class="warning-color mb-3">Business Model Assumptions</h3>
+                <div class="grid-2">
+                    <div>
+                        <ul class="bullet-points">
+                            <li><strong>Revenue split viability:</strong> 60/40 kiosk/platform acceptable</li>
+                            <li><strong>Customer acquisition cost:</strong> KES 100 estimate realistic</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul class="bullet-points">
+                            <li><strong>Government partnership timeline:</strong> Requirements and processes</li>
+                            <li><strong>Regional expansion complexity:</strong> Regulatory and cost factors</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Next Steps for Data Collection</h3>
+                <div class="grid-2">
+                    <div>
+                        <h4 class="primary-color">Primary Research Needed</h4>
+                        <ul class="bullet-points">
+                            <li>Government data request for official loss statistics</li>
+                            <li>User interviews with 50+ document loss victims</li>
+                            <li>Kiosk agent surveys on participation willingness</li>
+                            <li>Government stakeholder meetings for partnership requirements</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="primary-color">Market Validation Required</h4>
+                        <ul class="bullet-points">
+                            <li>Pilot program with 5-10 kiosks (3-month trial)</li>
+                            <li>User testing for recovery process validation</li>
+                            <li>Pricing sensitivity analysis for fee optimization</li>
+                            <li>Security requirements assessment for acceptance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Research Summary -->
+        <div class="section">
+            <div class="impact-vision">
+                <h2>📋 Research Summary & Confidence Levels</h2>
+                
+                <div class="grid-3 mt-4">
+                    <div>
+                        <h3 style="color: white;">High Confidence</h3>
+                        <ul class="bullet-points" style="color: white;">
+                            <li>Technical infrastructure capability</li>
+                            <li>Mobile money and SMS penetration</li>
+                            <li>Government policy alignment</li>
+                            <li>Kiosk network availability</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: white;">Medium Confidence</h3>
+                        <ul class="bullet-points" style="color: white;">
+                            <li>Market size estimates</li>
+                            <li>Revenue model assumptions</li>
+                            <li>Regional expansion timeline</li>
+                            <li>Competition assessment</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: white;">Requires Validation</h3>
+                        <ul class="bullet-points" style="color: white;">
+                            <li>Exact document loss numbers</li>
+                            <li>User willingness to pay</li>
+                            <li>Kiosk partner adoption rates</li>
+                            <li>Government partnership timeline</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="quote" style="background: rgba(255,255,255,0.1); border-left-color: white; color: white; margin: 2rem 0;">
+                    "Strong foundation of infrastructure and policy alignment, with clear paths to validate key market assumptions through pilot programs."
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

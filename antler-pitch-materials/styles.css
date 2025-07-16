@@ -1,0 +1,418 @@
+/* Professional Pitch Deck Styles - Optimized for PDF Printing */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #2c3e50;
+    background: #ffffff;
+    font-size: 14px;
+}
+
+/* Print Optimization */
+@media print {
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .page-break {
+        page-break-after: always;
+    }
+    
+    .no-break {
+        page-break-inside: avoid;
+    }
+}
+
+/* Typography */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 1rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 0.75rem;
+}
+
+p {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.slide {
+    min-height: 100vh;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    background: white;
+}
+
+.slide-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Brand Colors */
+.primary-color { color: #3182ce; }
+.secondary-color { color: #805ad5; }
+.accent-color { color: #38a169; }
+.warning-color { color: #dd6b20; }
+.danger-color { color: #e53e3e; }
+
+.bg-primary { background-color: #3182ce; color: white; }
+.bg-secondary { background-color: #805ad5; color: white; }
+.bg-accent { background-color: #38a169; color: white; }
+.bg-light { background-color: #f7fafc; }
+.bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* Cards and Sections */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+}
+
+.highlight-box {
+    background: #edf2f7;
+    border-left: 4px solid #3182ce;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.quote {
+    font-size: 1.5rem;
+    font-style: italic;
+    text-align: center;
+    color: #4a5568;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-left: 4px solid #3182ce;
+    background: #f7fafc;
+}
+
+/* Lists */
+ul, ol {
+    margin-left: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.bullet-points {
+    list-style: none;
+    margin-left: 0;
+}
+
+.bullet-points li {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.bullet-points li::before {
+    content: "▶";
+    color: #3182ce;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Grid Layouts */
+.grid {
+    display: grid;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+/* Flex Layouts */
+.flex {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Metrics and Numbers */
+.metric {
+    text-align: center;
+    padding: 1.5rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    border-top: 4px solid #3182ce;
+}
+
+.metric-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #3182ce;
+    display: block;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background: #f7fafc;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+/* Buttons and CTAs */
+.cta {
+    background: #3182ce;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 600;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.cta:hover {
+    background: #2c5aa0;
+}
+
+.cta-secondary {
+    background: #805ad5;
+}
+
+.cta-secondary:hover {
+    background: #6b46c1;
+}
+
+/* Icons and Emojis */
+.icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.emoji {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #3182ce;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -0.5rem;
+    top: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    background: #3182ce;
+    border-radius: 50%;
+}
+
+/* Progress Indicators */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #3182ce;
+    transition: width 0.3s ease;
+}
+
+/* Status Indicators */
+.status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-success {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.status-warning {
+    background: #fefcbf;
+    color: #744210;
+}
+
+.status-info {
+    background: #bee3f8;
+    color: #2a4365;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .slide {
+        padding: 2rem 1rem;
+        min-height: auto;
+    }
+    
+    .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .flex {
+        flex-direction: column;
+    }
+    
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    
+    .metric-number { font-size: 2rem; }
+}
+
+/* Print-specific adjustments */
+@media print {
+    .slide {
+        min-height: auto;
+        page-break-after: always;
+    }
+    
+    .slide:last-child {
+        page-break-after: avoid;
+    }
+    
+    .no-print {
+        display: none;
+    }
+}
+
+/* Utility Classes */
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.p-1 { padding: 0.5rem; }
+.p-2 { padding: 1rem; }
+.p-3 { padding: 1.5rem; }
+.p-4 { padding: 2rem; }
+
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-medium { font-weight: 500; }
+
+.opacity-75 { opacity: 0.75; }
+.opacity-50 { opacity: 0.5; }

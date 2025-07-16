@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nipe ID - Antler Pitch Deck</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Presentation-specific styles */
+        .slide {
+            min-height: 100vh;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 0.875rem;
+            color: #718096;
+        }
+        
+        .hero-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .hero-slide h1 {
+            color: white;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-slide .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .problem-visual {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .solution-flow {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .flow-step {
+            text-align: center;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .flow-step::after {
+            content: "→";
+            position: absolute;
+            right: -1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3182ce;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .flow-step:last-child::after {
+            display: none;
+        }
+        
+        .market-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .traction-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+        
+        .business-model-phases {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .phase-card {
+            background: #f7fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            border-top: 4px solid #3182ce;
+        }
+        
+        .timing-factors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .ask-section {
+            background: #f7fafc;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .milestones {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .milestone {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #3182ce;
+            text-align: center;
+        }
+        
+        .closing-cta {
+            background: #3182ce;
+            color: white;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .closing-cta h3 {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title -->
+    <div class="slide hero-slide">
+        <div class="slide-number">1/7</div>
+        <div class="slide-content">
+            <div class="logo">📱</div>
+            <h1>Nipe ID</h1>
+            <p class="subtitle">Digitizing Document Recovery for 50 Million Kenyans</p>
+            <div class="mt-4">
+                <p class="text-xl opacity-90">Turning months-long recovery into minutes-long solutions</p>
+            </div>
+            <div class="mt-4 text-lg opacity-75">
+                <p>Antler Pitch Presentation • January 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Problem -->
+    <div class="slide">
+        <div class="slide-number">2/7</div>
+        <div class="slide-header">
+            <h2>🚨 The Crisis: 1,000+ IDs Lost Daily</h2>
+        </div>
+        <div class="slide-content">
+            <div class="problem-visual">
+                <h3 class="primary-color mb-3">Without Your ID, You're Locked Out</h3>
+                <div class="grid-3 mb-4">
+                    <div>
+                        <div class="emoji">🏪</div>
+                        <p class="font-semibold">No Bank Account</p>
+                    </div>
+                    <div>
+                        <div class="emoji">💼</div>
+                        <p class="font-semibold">No Employment</p>
+                    </div>
+                    <div>
+                        <div class="emoji">📱</div>
+                        <p class="font-semibold">No SIM Card</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4 class="danger-color">Current Recovery Process</h4>
+                    <ul class="bullet-points">
+                        <li><strong>3-6 months</strong> waiting time</li>
+                        <li><strong>KES 2,500+</strong> total costs</li>
+                        <li><strong>Multiple office visits</strong> required</li>
+                        <li><strong>No tracking system</strong> exists</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 class="primary-color">Market Scale</h4>
+                    <ul class="bullet-points">
+                        <li><strong>50M+ Kenyans</strong> depend on physical IDs</li>
+                        <li><strong>365K+ documents</strong> lost annually</li>
+                        <li><strong>$6.8M market</strong> in recovery costs</li>
+                        <li><strong>Rural communities</strong> most affected</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="quote">
+                "We're digitizing the recovery of life's most important documents"
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Solution -->
+    <div class="slide">
+        <div class="slide-number">3/7</div>
+        <div class="slide-header">
+            <h2>💡 Nipe ID: Months to Minutes</h2>
+        </div>
+        <div class="slide-content">
+            <div class="solution-flow">
+                <div class="flow-step">
+                    <div class="emoji">📄</div>
+                    <h4>Document Found</h4>
+                    <p class="text-sm">Taken to kiosk</p>
+                </div>
+                <div class="flow-step">
+                    <div class="emoji">🤖</div>
+                    <h4>AI Matching</h4>
+                    <p class="text-sm">System identifies owner</p>
+                </div>
+                <div class="flow-step">
+                    <div class="emoji">📱</div>
+                    <h4>SMS Alert</h4>
+                    <p class="text-sm">Instant notification</p>
+                </div>
+                <div class="flow-step">
+                    <div class="emoji">🔐</div>
+                    <h4>Verification</h4>
+                    <p class="text-sm">Multi-factor auth</p>
+                </div>
+                <div class="flow-step">
+                    <div class="emoji">✅</div>
+                    <h4>Collection</h4>
+                    <p class="text-sm">Pickup at kiosk</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3 class="mb-3">Key Differentiators</h3>
+                <div class="grid-2">
+                    <ul class="bullet-points">
+                        <li><strong>15K+ kiosk network</strong> (M-Pesa agents)</li>
+                        <li><strong>SMS-first</strong> (no smartphone needed)</li>
+                        <li><strong>Privacy-first design</strong> with encryption</li>
+                    </ul>
+                    <ul class="bullet-points">
+                        <li><strong>Multi-language support</strong></li>
+                        <li><strong>Government-friendly</strong> approach</li>
+                        <li><strong>Production-ready</strong> platform</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <div class="status status-success">✅ Full platform already built and tested</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Market & Business Model -->
+    <div class="slide">
+        <div class="slide-number">4/7</div>
+        <div class="slide-header">
+            <h2>📊 Market Opportunity & Revenue Model</h2>
+        </div>
+        <div class="slide-content">
+            <div class="market-stats">
+                <div class="metric">
+                    <span class="metric-number">50M+</span>
+                    <span class="metric-label">Kenyan Citizens</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">365K+</span>
+                    <span class="metric-label">Annual Losses</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">$6.8M</span>
+                    <span class="metric-label">Kenya Market Size</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-number">200M+</span>
+                    <span class="metric-label">East Africa Total</span>
+                </div>
+            </div>
+
+            <div class="business-model-phases">
+                <div class="phase-card">
+                    <h4 class="primary-color">Phase 1: Launch</h4>
+                    <p class="font-semibold mb-2">Commission Model</p>
+                    <ul class="text-sm">
+                        <li>KES 300 per recovery</li>
+                        <li>60/40 split with kiosks</li>
+                        <li>1K recoveries = KES 120K revenue</li>
+                    </ul>
+                </div>
+                <div class="phase-card">
+                    <h4 class="primary-color">Phase 2: Scale</h4>
+                    <p class="font-semibold mb-2">Subscription Model</p>
+                    <ul class="text-sm">
+                        <li>Kiosk subscriptions</li>
+                        <li>Enterprise partnerships</li>
+                        <li>Government contracts</li>
+                    </ul>
+                </div>
+                <div class="phase-card">
+                    <h4 class="primary-color">Phase 3: Expand</h4>
+                    <p class="font-semibold mb-2">Platform Model</p>
+                    <ul class="text-sm">
+                        <li>Regional expansion</li>
+                        <li>Additional document types</li>
+                        <li>Insurance partnerships</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4 class="mb-2">Unit Economics</h4>
+                <div class="grid-4">
+                    <div>
+                        <strong class="primary-color">CAC:</strong> KES 100
+                    </div>
+                    <div>
+                        <strong class="primary-color">LTV:</strong> KES 350
+                    </div>
+                    <div>
+                        <strong class="primary-color">Gross Margin:</strong> 70%
+                    </div>
+                    <div>
+                        <strong class="primary-color">Break-even:</strong> 1.5K/month
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Traction & Why Now -->
+    <div class="slide">
+        <div class="slide-number">5/7</div>
+        <div class="slide-header">
+            <h2>🚀 Traction & Perfect Timing</h2>
+        </div>
+        <div class="slide-content">
+            <div class="traction-grid">
+                <div class="card">
+                    <h3 class="accent-color mb-3">✅ Technical Progress</h3>
+                    <ul class="bullet-points">
+                        <li>Full-stack platform deployed</li>
+                        <li>SMS integration operational</li>
+                        <li>M-Pesa payment ready</li>
+                        <li>Kiosk management system</li>
+                        <li>Admin dashboard complete</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="accent-color mb-3">🎯 Market Validation</h3>
+                    <ul class="bullet-points">
+                        <li>3 kiosk chains in discussions</li>
+                        <li>Government meetings scheduled</li>
+                        <li>5 kiosks ready for beta (Q1)</li>
+                        <li>50+ user interviews completed</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timing-factors">
+                <div class="card">
+                    <h4 class="primary-color">🌟 Infrastructure Ready</h4>
+                    <ul class="bullet-points">
+                        <li><strong>96% M-Pesa adoption</strong></li>
+                        <li><strong>99% SMS coverage</strong></li>
+                        <li><strong>Cloud infrastructure</strong> cost-effective</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 class="primary-color">📈 Policy Alignment</h4>
+                    <ul class="bullet-points">
+                        <li><strong>Digital Economy Blueprint</strong></li>
+                        <li><strong>$100M World Bank</strong> digital ID funding</li>
+                        <li><strong>Post-COVID</strong> digital acceleration</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="quote">
+                "The infrastructure, regulatory environment, and market need have never been more aligned"
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Team & Antler Partnership -->
+    <div class="slide">
+        <div class="slide-number">6/7</div>
+        <div class="slide-header">
+            <h2>👥 Team & Partnership Opportunity</h2>
+        </div>
+        <div class="slide-content">
+            <div class="grid-2 mb-4">
+                <div class="card">
+                    <h3 class="primary-color mb-3">Timothy Nyota - Founder</h3>
+                    <ul class="bullet-points">
+                        <li><strong>Full-stack developer</strong> with proven execution</li>
+                        <li><strong>Production platform</strong> built and deployed</li>
+                        <li><strong>Deep understanding</strong> of Kenya's digital ecosystem</li>
+                        <li><strong>Systems thinking</strong> for complex identity challenges</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="primary-color mb-3">Competitive Advantages</h3>
+                    <ul class="bullet-points">
+                        <li><strong>Technical expertise</strong> in local payment/SMS systems</li>
+                        <li><strong>First-mover advantage</strong> in digital recovery</li>
+                        <li><strong>Government-friendly</strong> enhancement approach</li>
+                        <li><strong>Scalable architecture</strong> for rapid expansion</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ask-section">
+                <h3 class="mb-3">💰 Raising $100K - $250K Seed</h3>
+                <div class="grid-4 mb-3">
+                    <div>
+                        <div class="font-bold text-lg primary-color">40%</div>
+                        <div class="text-sm">Market Entry</div>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg primary-color">30%</div>
+                        <div class="text-sm">Product Dev</div>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg primary-color">20%</div>
+                        <div class="text-sm">Team Expansion</div>
+                    </div>
+                    <div>
+                        <div class="font-bold text-lg primary-color">10%</div>
+                        <div class="text-sm">Compliance</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="milestones">
+                <div class="milestone">
+                    <h4 class="primary-color">Q1 2025</h4>
+                    <p class="text-sm">10 kiosk partners<br>100 recoveries</p>
+                </div>
+                <div class="milestone">
+                    <h4 class="primary-color">Q2 2025</h4>
+                    <p class="text-sm">50 kiosk partners<br>1K recoveries</p>
+                </div>
+                <div class="milestone">
+                    <h4 class="primary-color">Q3 2025</h4>
+                    <p class="text-sm">Government pilot<br>5K recoveries</p>
+                </div>
+                <div class="milestone">
+                    <h4 class="primary-color">Q4 2025</h4>
+                    <p class="text-sm">Series A ready<br>Regional planning</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Closing -->
+    <div class="slide">
+        <div class="slide-number">7/7</div>
+        <div class="slide-content">
+            <div class="closing-cta">
+                <h2 class="mb-3">🎯 Join Us in Building Africa's Digital Infrastructure</h2>
+                <div class="quote" style="background: rgba(255,255,255,0.1); border-left-color: white; color: white;">
+                    "Today, losing your ID means losing access to modern life.<br>
+                    Tomorrow, with Nipe ID, it means getting a text message."
+                </div>
+            </div>
+
+            <div class="grid-2 mt-4">
+                <div class="card">
+                    <h3 class="accent-color mb-3">💫 Impact We're Creating</h3>
+                    <ul class="bullet-points">
+                        <li><strong>Millions of citizens</strong> with faster recovery</li>
+                        <li><strong>Thousands of kiosks</strong> with new revenue</li>
+                        <li><strong>Government efficiency</strong> through digitization</li>
+                        <li><strong>Financial inclusion</strong> by removing barriers</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 class="primary-color mb-3">🚀 Ready to Scale</h3>
+                    <ul class="bullet-points">
+                        <li><strong>Platform built</strong> and production-ready</li>
+                        <li><strong>Market validated</strong> through research</li>
+                        <li><strong>Partnerships ready</strong> for activation</li>
+                        <li><strong>Team committed</strong> to execution</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <h3 class="primary-color mb-3">Are you ready to help us digitize document recovery for 50 million Kenyans?</h3>
+                <div class="text-lg">
+                    <strong>Contact:</strong> timothy@nipeid.com<br>
+                    <strong>Demo:</strong> Available immediately<br>
+                    <strong>Next Steps:</strong> Partnership discussions & pilot planning
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
